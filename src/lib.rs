@@ -1,48 +1,65 @@
 #![allow(unused)]
 
-use std::f64;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
-#[wasm_bindgen(start)]
-pub fn start() {
-    let document = web_sys::window().unwrap().document().unwrap();
-    let canvas = document.get_element_by_id("canvas").unwrap();
-    let canvas: web_sys::HtmlCanvasElement = canvas
-        .dyn_into::<web_sys::HtmlCanvasElement>()
-        .map_err(|_| ())
-        .unwrap();
+use rand::Rng;
 
-    let context = canvas
-        .get_context("2d")
-        .unwrap()
-        .unwrap()
-        .dyn_into::<web_sys::CanvasRenderingContext2d>()
-        .unwrap();
+use std::f64;
 
-    context.begin_path();
+#[wasm_bindgen]
+pub struct CircleDrawer {
+    ctx: web_sys::CanvasRenderingContext2d
+}
 
-    // Draw the outer circle.
-    context
-        .arc(75.0, 75.0, 50.0, 0.0, f64::consts::PI * 2.0)
-        .unwrap();
+#[wasm_bindgen]
+impl CircleDrawer {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> Self {
+        let document = web_sys::window().unwrap().document().unwrap();
+        let canvas = document.get_element_by_id("canvas").unwrap();
+        let canvas: web_sys::HtmlCanvasElement = canvas
+            .dyn_into::<web_sys::HtmlCanvasElement>()
+            .map_err(|_| ())
+            .unwrap();
 
-    // Draw the mouth.
-    context.move_to(110.0, 75.0);
-    context.arc(75.0, 75.0, 35.0, 0.0, f64::consts::PI).unwrap();
+        let context = canvas
+            .get_context("2d")
+            .unwrap()
+            .unwrap()
+            .dyn_into::<web_sys::CanvasRenderingContext2d>()
+            .unwrap();
 
-    // Draw the left eye.
-    context.move_to(65.0, 65.0);
-    context
-        .arc(60.0, 65.0, 5.0, 0.0, f64::consts::PI * 2.0)
-        .unwrap();
+        Self {
+            ctx: context
+        }
+    }
 
-    // Draw the right eye.
-    context.move_to(95.0, 65.0);
-    context
-        .arc(90.0, 65.0, 5.0, 0.0, f64::consts::PI * 2.0)
-        .unwrap();
+    pub fn draw_circle(&self, x: i32, y: i32, radius: f64) {
+        self.ctx.begin_path();
+        self.ctx.ellipse(
+            x as f64, y as f64, radius, radius,
+            0., // rotation
+            0., f64::consts::PI * 2.
+        );
+        self.ctx.fill();
+    }
 
-    context.set_stroke_style(&JsValue::from_str("#ff7700"));
-    context.stroke();
+    pub fn draw(&self) {
+        let mut rng = rand::thread_rng();
+
+        let color = format!(
+            "#{:02x}{:02x}{:02x}",
+            rand::random::<u8>(),
+            rand::random::<u8>(),
+            rand::random::<u8>()
+        );
+        self.ctx.set_fill_style(&JsValue::from_str(color.as_str()));
+        
+        self.draw_circle(
+            rng.gen_range(0 .. 1000),
+            rng.gen_range(0 .. 1000),
+            rng.gen_range(0. .. 500.),
+        );
+    }
 }

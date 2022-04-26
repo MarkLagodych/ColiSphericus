@@ -6,13 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coli Sphericus</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦠</text></svg>">
-
     <link rel="stylesheet" type="text/css" href="./web/style.css">
 </head>
 <body>
 
     <div id="control-panel">
-        <button class="important-control">Малюй!</button>
+        <button class="important-control" onclick="draw()">Малюй!</button>
 
         <button>Стоп!</button>
 
@@ -30,8 +29,19 @@
     </main>
 
     <script type="module">
-        import init from './wasm/wasm.js';
-        init();
+        import init, {CircleDrawer} from './wasm/wasm.js';
+        
+        var drawer;
+        
+        async function load_wasm() {
+            await init();
+            drawer = new CircleDrawer();
+        }
+        load_wasm();
+
+        window.draw = function() {
+            drawer.draw();
+        }
     </script>
 </body>
 </html>

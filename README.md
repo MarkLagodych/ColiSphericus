@@ -3,7 +3,7 @@
 ## Build
 ```sh
 cargo install wasm-pack
-./build
+./build # --release
 ```
 
 ## Run

@@ -10,6 +10,8 @@ description = """
 crate-type = ["cdylib"]
 
 [dependencies]
+getrandom = { version = "0.2", features = ["js"] } # For rand to work on wasm
+rand = "0.8.5"
 js-sys = "0.3.57"
 wasm-bindgen = "0.2.80"
 

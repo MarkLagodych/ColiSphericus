@@ -2,3 +2,5 @@ target
 .junk
 *.ts
 wasm/.gitignore
+wasm/README.md
+wasm/package.json

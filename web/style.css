@@ -1,0 +1,66 @@
+html, body {
+    width: 100vw;
+    height: 100vh;
+    background: #93a3aa;
+    margin: 0;
+    padding: 0;
+    /* display: flex; */
+    font-family: Arial, Helvetica, sans-serif
+}
+
+main {
+    margin: auto;
+    width: fit-content;
+}
+
+#control-panel {
+    width: 100vw;
+    top: 0;
+    height: 2em;
+    background: white;
+    display: flex;
+}
+
+#control-panel * {
+    height: 80%;
+    margin: auto 0.5em;
+    border-radius: 0.3em;
+    border: 1px solid black;
+    vertical-align: middle;
+}
+
+#control-panel input {
+    width: 5em;
+    border-radius: 0;
+    height: 1.5em;
+}
+
+#control-panel div,
+#control-panel span {
+    border: none;
+    display: inline-block;
+}
+
+#control-panel div * {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+#control-panel button:active {
+    background: #ccc;
+}
+
+#control-panel button.important-control {
+    background: #95ee8a;
+}
+
+#control-panel button.important-control:active {
+    background: #cdeec8;
+}
+
+#canvas {
+    margin-top: 1em;
+    border: 1px solid black;
+    background: lightgray;
+    width: min(70vw, 70vh);
+}

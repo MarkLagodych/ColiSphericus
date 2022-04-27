@@ -7,9 +7,55 @@ use rand::Rng;
 
 use std::f64;
 
+// #[wasm_bindgen]
+struct Circle {
+    x: f64,
+    y: f64,
+    r: f64,
+    fill_style: JsValue,
+}
+
+impl Circle {
+    pub fn from(x: f64, y: f64, r: f64, fill_style: &str) -> Self {
+        Self {
+            x, y, r, fill_style: JsValue::from_str(fill_style)
+        }
+    }
+
+    pub fn new() -> Self {
+        Self::from(0., 0., 0., "#000000")
+    }
+    
+    pub fn new_random() -> Self {
+        let mut rng = rand::thread_rng();
+
+        let color = format!(
+            "#{:02x}{:02x}{:02x}",
+            rand::random::<u8>(),
+            rand::random::<u8>(),
+            rand::random::<u8>()
+        );
+        
+        Self::from(
+            rng.gen_range(0. .. 1000.),
+            rng.gen_range(0. .. 1000.),
+            0.,
+            color.as_str()
+        )
+    }
+
+    pub fn grow(&mut self, speed: f64) {
+        self. r += speed;
+    }
+}
+
+
+
 #[wasm_bindgen]
 pub struct CircleDrawer {
-    ctx: web_sys::CanvasRenderingContext2d
+    ctx: web_sys::CanvasRenderingContext2d,
+    circles: Vec::<Circle>,
+    speed: f64,
 }
 
 #[wasm_bindgen]
@@ -31,35 +77,44 @@ impl CircleDrawer {
             .unwrap();
 
         Self {
-            ctx: context
+            ctx: context,
+            circles: vec![],
+            speed: 0.2
         }
     }
 
-    pub fn draw_circle(&self, x: i32, y: i32, radius: f64) {
+    fn draw_circle(&self, circle: &Circle) {
         self.ctx.begin_path();
         self.ctx.ellipse(
-            x as f64, y as f64, radius, radius,
+            circle.x, circle.y, circle.r, circle.r,
             0., // rotation
             0., f64::consts::PI * 2.
         );
+        self.ctx.set_fill_style(&circle.fill_style);
         self.ctx.fill();
     }
 
-    pub fn draw(&self) {
-        let mut rng = rand::thread_rng();
-
-        let color = format!(
-            "#{:02x}{:02x}{:02x}",
-            rand::random::<u8>(),
-            rand::random::<u8>(),
-            rand::random::<u8>()
-        );
-        self.ctx.set_fill_style(&JsValue::from_str(color.as_str()));
-        
-        self.draw_circle(
-            rng.gen_range(0 .. 1000),
-            rng.gen_range(0 .. 1000),
-            rng.gen_range(0. .. 500.),
-        );
+    pub fn clear(&mut self) {
+        self.ctx.clear_rect(0., 0., 1000., 1000.);
+        self.circles.clear();
     }
+
+
+    pub fn set_speed(&mut self, speed: f64) {
+        self.speed = speed;
+    }
+
+
+    pub fn draw(&mut self) {
+        self.circles.push(Circle::new_random());
+
+        for circle in &mut self.circles {
+            circle.grow(self.speed);
+        }
+
+        for circle in &self.circles {
+            self.draw_circle(circle);
+        }
+    }
+    
 }

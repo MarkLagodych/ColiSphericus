@@ -218,12 +218,15 @@ export class CircleDrawer {
         return CircleDrawer.__wrap(ret);
     }
     /**
-    * @param {number} x
-    * @param {number} y
-    * @param {number} radius
     */
-    draw_circle(x, y, radius) {
-        wasm.circledrawer_draw_circle(this.ptr, x, y, radius);
+    clear() {
+        wasm.circledrawer_clear(this.ptr);
+    }
+    /**
+    * @param {number} speed
+    */
+    set_speed(speed) {
+        wasm.circledrawer_set_speed(this.ptr, speed);
     }
     /**
     */
@@ -304,6 +307,9 @@ async function init(input) {
     imports.wbg.__wbg_ellipse_c8e6fd53b444f6c3 = function() { return handleError(function (arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) {
         getObject(arg0).ellipse(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
     }, arguments) };
+    imports.wbg.__wbg_clearRect_5e0469d0d11a7aee = function(arg0, arg1, arg2, arg3, arg4) {
+        getObject(arg0).clearRect(arg1, arg2, arg3, arg4);
+    };
     imports.wbg.__wbg_instanceof_HtmlCanvasElement_b94545433bb4d2ef = function(arg0) {
         const ret = getObject(arg0) instanceof HTMLCanvasElement;
         return ret;

@@ -11,13 +11,19 @@
 <body>
 
     <div id="control-panel">
-        <button class="important-control" onclick="draw()">Малюй!</button>
+        <button
+            class="important-control"
+            onclick="startDrawing()">
+                Малюй!
+        </button>
 
-        <button>Стоп!</button>
+        <button onclick="stopDrawing()">Стоп!</button>
+
+        <button onclick="clearDrawing()">Очистити</button>
 
         <div>
             <span>швидкість росту:</span>
-            <input type="number" name="v" value="1"/>
+            <input id="speed" type="number" name="v" value="1"/>
             <span>мм/с</span>
         </div>
     </div>
@@ -29,18 +35,39 @@
     </main>
 
     <script type="module">
-        import init, {CircleDrawer} from './wasm/wasm.js';
+        import {default as init_wasm, CircleDrawer} from './wasm/wasm.js';
         
         var drawer;
         
         async function load_wasm() {
-            await init();
+            await init_wasm();
             drawer = new CircleDrawer();
         }
         load_wasm();
-
-        window.draw = function() {
+        
+        function step() {
             drawer.draw();
+        }
+        
+        window.drawingIntervalObject = null;
+        window.startDrawing = function() {
+            drawer.set_speed(
+                Number.parseFloat(document.getElementById('speed').value)
+            );
+            if (window.drawingIntervalObject === null)
+                window.drawingIntervalObject = setInterval(step, 100);
+        };
+
+        window.stopDrawing = function() {
+            if (window.drawingIntervalObject !== null) {
+                clearInterval(window.drawingIntervalObject);
+                window.drawingIntervalObject = null;
+            }
+        };
+
+        window.clearDrawing = function() {
+            if (confirm("Точно очистити?"))
+                drawer.clear();
         }
     </script>
 </body>

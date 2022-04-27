@@ -7,56 +7,9 @@ use rand::Rng;
 
 use std::f64;
 
-// #[wasm_bindgen]
-struct Circle {
-    x: f64,
-    y: f64,
-    r: f64,
-    fill_style: JsValue,
-    active: bool,
-}
 
-impl Circle {
-    pub fn from(x: f64, y: f64, r: f64, fill_style: &str) -> Self {
-        Self {
-            x, y, r, fill_style: JsValue::from_str(fill_style),
-            active: true,
-        }
-    }
-
-    pub fn new() -> Self {
-        Self::from(0., 0., 0., "#000000")
-    }
-    
-    pub fn new_random() -> Self {
-        let mut rng = rand::thread_rng();
-
-        let color = format!(
-            "#{:02x}{:02x}{:02x}",
-            rand::random::<u8>(),
-            rand::random::<u8>(),
-            rand::random::<u8>()
-        );
-        
-        Self::from(
-            rng.gen_range(0. .. 1000.),
-            rng.gen_range(0. .. 1000.),
-            0.,
-            color.as_str()
-        )
-    }
-
-    pub fn grow(&mut self, speed: f64) {
-        if (self.active) {
-            self.r += speed;
-        }
-    }
-
-    pub fn deactivate(&mut self) {
-        self.active = false;
-    }
-}
-
+mod circle;
+use circle::*;
 
 
 #[wasm_bindgen]
@@ -113,11 +66,37 @@ impl CircleDrawer {
     }
 
 
+    fn can_put_circle(&self, circle: &Circle) -> bool {
+        for my_circle in &self.circles {
+            if my_circle.intersects(circle) {
+                return false;
+            }
+        }
+
+        true
+    }
+
+
     pub fn draw(&mut self) {
-        self.circles.push(Circle::new_random());
+        let mut circle = Circle::new_random_color();
+
+        let mut rng = rand::thread_rng();
+        loop {
+            circle.x = rng.gen_range(0. .. 1000.);
+            circle.y = rng.gen_range(0. .. 1000.);
+            if self.can_put_circle(&circle) {break;}
+        }
+
+        self.circles.push(circle);
 
         for circle in &mut self.circles {
             circle.grow(self.speed);
+        }
+
+        for circle in &self.circles {
+            if circle.active {
+                self.draw_circle(circle);
+            }
         }
 
         for i in 0..self.circles.len() {
@@ -127,16 +106,11 @@ impl CircleDrawer {
                 let c1 = &self.circles[i];
                 let c2 = &self.circles[j];
 
-                if (c1.x-c2.x).powf(2.) + (c1.y-c2.y).powf(2.)
-                    <= (c1.r+c2.r).powf(2.) {
+                if c1.intersects(c2) {
                     self.circles[i].deactivate();
                     self.circles[j].deactivate();
                 }
             }
-        }
-
-        for circle in &self.circles {
-            self.draw_circle(circle);
         }
     }
     

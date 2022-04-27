@@ -7,15 +7,13 @@ use rand::Rng;
 
 use std::f64;
 
-
 mod circle;
 use circle::*;
-
 
 #[wasm_bindgen]
 pub struct CircleDrawer {
     ctx: web_sys::CanvasRenderingContext2d,
-    circles: Vec::<Circle>,
+    circles: Vec<Circle>,
     speed: f64,
 }
 
@@ -40,16 +38,20 @@ impl CircleDrawer {
         Self {
             ctx: context,
             circles: vec![],
-            speed: 0.2
+            speed: 0.2,
         }
     }
 
     fn draw_circle(&self, circle: &Circle) {
         self.ctx.begin_path();
         self.ctx.ellipse(
-            circle.x, circle.y, circle.r, circle.r,
+            circle.x,
+            circle.y,
+            circle.r,
+            circle.r,
             0., // rotation
-            0., f64::consts::PI * 2.
+            0.,
+            f64::consts::PI * 2.,
         );
         self.ctx.set_fill_style(&circle.fill_style);
         self.ctx.fill();
@@ -60,11 +62,9 @@ impl CircleDrawer {
         self.circles.clear();
     }
 
-
     pub fn set_speed(&mut self, speed: f64) {
         self.speed = speed;
     }
-
 
     fn can_put_circle(&self, circle: &Circle) -> bool {
         for my_circle in &self.circles {
@@ -76,15 +76,16 @@ impl CircleDrawer {
         true
     }
 
-
     pub fn draw(&mut self) {
         let mut circle = Circle::new_random_color();
 
         let mut rng = rand::thread_rng();
         loop {
-            circle.x = rng.gen_range(0. .. 1000.);
-            circle.y = rng.gen_range(0. .. 1000.);
-            if self.can_put_circle(&circle) {break;}
+            circle.x = rng.gen_range(0. ..1000.);
+            circle.y = rng.gen_range(0. ..1000.);
+            if self.can_put_circle(&circle) {
+                break;
+            }
         }
 
         self.circles.push(circle);
@@ -99,10 +100,13 @@ impl CircleDrawer {
             }
         }
 
-        for i in 0..self.circles.len() {
-            for j in 0..self.circles.len() {
-                if i == j {continue;}
+        for i in 0..(self.circles.len() - 1) {
 
+            if self.circles[i].out_of_bounds() {
+                self.circles[i].deactivate();
+            }
+
+            for j in (i + 1)..self.circles.len() {
                 let c1 = &self.circles[i];
                 let c2 = &self.circles[j];
 
@@ -113,5 +117,4 @@ impl CircleDrawer {
             }
         }
     }
-    
 }

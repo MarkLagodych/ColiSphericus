@@ -13,12 +13,14 @@ struct Circle {
     y: f64,
     r: f64,
     fill_style: JsValue,
+    active: bool,
 }
 
 impl Circle {
     pub fn from(x: f64, y: f64, r: f64, fill_style: &str) -> Self {
         Self {
-            x, y, r, fill_style: JsValue::from_str(fill_style)
+            x, y, r, fill_style: JsValue::from_str(fill_style),
+            active: true,
         }
     }
 
@@ -45,7 +47,13 @@ impl Circle {
     }
 
     pub fn grow(&mut self, speed: f64) {
-        self. r += speed;
+        if (self.active) {
+            self.r += speed;
+        }
+    }
+
+    pub fn deactivate(&mut self) {
+        self.active = false;
     }
 }
 
@@ -110,6 +118,21 @@ impl CircleDrawer {
 
         for circle in &mut self.circles {
             circle.grow(self.speed);
+        }
+
+        for i in 0..self.circles.len() {
+            for j in 0..self.circles.len() {
+                if i == j {continue;}
+
+                let c1 = &self.circles[i];
+                let c2 = &self.circles[j];
+
+                if (c1.x-c2.x).powf(2.) + (c1.y-c2.y).powf(2.)
+                    <= (c1.r+c2.r).powf(2.) {
+                    self.circles[i].deactivate();
+                    self.circles[j].deactivate();
+                }
+            }
         }
 
         for circle in &self.circles {

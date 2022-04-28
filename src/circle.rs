@@ -44,7 +44,7 @@ impl Circle {
     }
 
     pub fn grow(&mut self, speed: f64) {
-        if (self.active) {
+        if self.active {
             self.r += speed;
         }
     }

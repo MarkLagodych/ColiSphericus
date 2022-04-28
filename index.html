@@ -39,7 +39,7 @@
                     Не виходити за межі
                 </input></li>
                 <li class="param"><input type="checkbox" id="param_wait">
-                    Дочекати закінчення росту колоній
+                    Дочекатися закінчення росту колоній
                 </input></li>
                 <li class="param"><input type="checkbox" id="param_hungry">
                     Голодні колонії
@@ -81,13 +81,24 @@
         
         function step() {
             drawer.draw();
+            if (drawer.is_finished())
+                window.stopDrawing();
         }
         
+        function isChecked(checkboxId) {
+            return document.getElementById(checkboxId).checked;
+        }
+
+        function getNum(inputId) {
+            return Number.parseFloat(document.getElementById(inputId).value);
+        }
+
         window.drawingIntervalObject = null;
         window.startDrawing = function() {
-            drawer.set_speed(
-                Number.parseFloat(document.getElementById('speed').value)
-            );
+            drawer.set_speed(getNum('speed')); 
+            drawer.set_time(getNum('time') * 60); // Mins -> seconds
+            drawer.set_bounded(isChecked('param_bounded'));
+            drawer.set_should_wait_until_end(isChecked('param_wait'));
             if (window.drawingIntervalObject === null)
                 window.drawingIntervalObject = setInterval(step, 100);
         };

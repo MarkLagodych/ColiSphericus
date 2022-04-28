@@ -1,4 +1,5 @@
 #![allow(unused)]
+#![allow(non_snake_case)]
 
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
@@ -15,6 +16,16 @@ pub struct CircleDrawer {
     ctx: web_sys::CanvasRenderingContext2d,
     circles: Vec<Circle>,
     speed: f64,
+    time: i32, /// SECONDS!!!
+    is_still_growing: bool,
+
+    // Parameters
+    is_bounded: bool,
+    should_wait_until_end: bool,
+    is_hungry: bool,
+    should_gen_St: bool,
+    should_gen_Nt: bool,
+    should_gen_tt: bool,
 }
 
 #[wasm_bindgen]
@@ -39,6 +50,15 @@ impl CircleDrawer {
             ctx: context,
             circles: vec![],
             speed: 0.2,
+            time: 15 * 60,
+            is_still_growing: false,
+
+            is_bounded: false,
+            should_wait_until_end: false,
+            is_hungry: false,
+            should_gen_St: false,
+            should_gen_Nt: false,
+            should_gen_tt: false,
         }
     }
 
@@ -60,10 +80,36 @@ impl CircleDrawer {
     pub fn clear(&mut self) {
         self.ctx.clear_rect(0., 0., 1000., 1000.);
         self.circles.clear();
+        self.is_still_growing = false;
     }
 
     pub fn set_speed(&mut self, speed: f64) {
         self.speed = speed;
+    }
+
+    pub fn set_time(&mut self, time: f64) {
+        self.time = time.ceil() as i32;
+        self.is_still_growing = true;
+    }
+
+    pub fn set_bounded(&mut self, bounded: bool) {
+        self.is_bounded = bounded;
+    }
+
+    pub fn set_should_wait_until_end(&mut self, value: bool) {
+        self.should_wait_until_end = value;
+    }
+
+    fn is_time_passed(&self) -> bool {
+        self.time <= 0
+    }
+
+    fn tick(&mut self) {
+        self.time -= 1;
+    }
+
+    pub fn is_finished(&self) -> bool {
+        self.is_time_passed() && !self.is_still_growing
     }
 
     fn can_put_circle(&self, circle: &Circle) -> bool {
@@ -76,37 +122,47 @@ impl CircleDrawer {
         true
     }
 
-    pub fn draw(&mut self) {
-        let mut circle = Circle::new_random_color();
+    
 
-        let mut rng = rand::thread_rng();
-        loop {
-            circle.x = rng.gen_range(0. ..1000.);
-            circle.y = rng.gen_range(0. ..1000.);
-            if self.can_put_circle(&circle) {
-                break;
-            }
+    pub fn draw(&mut self) {
+        self.tick();
+
+        if self.is_time_passed() && !(self.should_wait_until_end && self.is_still_growing) {
+            return;
         }
 
-        self.circles.push(circle);
+        if !self.is_time_passed() {
+            // Create new circle
+            let mut circle = Circle::new_random_color();
+
+            let mut rng = rand::thread_rng();
+            loop {
+                circle.x = rng.gen_range(0. ..1000.);
+                circle.y = rng.gen_range(0. ..1000.);
+                if self.can_put_circle(&circle) {
+                    break;
+                }
+            }
+
+            self.circles.push(circle);
+        }
 
         for circle in &mut self.circles {
             circle.grow(self.speed);
         }
 
+        // 1. Draw circles;  2. Find out if there are still growing circles
+        self.is_still_growing = false;
         for circle in &self.circles {
             if circle.active {
+                self.is_still_growing = true;
                 self.draw_circle(circle);
             }
         }
 
         for i in 0..(self.circles.len() - 1) {
 
-            if !self.circles[i].active {
-                break;
-            }
-
-            if self.circles[i].out_of_bounds() {
+            if self.is_bounded && self.circles[i].out_of_bounds() {
                 self.circles[i].deactivate();
             }
 

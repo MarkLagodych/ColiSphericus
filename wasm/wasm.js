@@ -229,6 +229,31 @@ export class CircleDrawer {
         wasm.circledrawer_set_speed(this.ptr, speed);
     }
     /**
+    * @param {number} time
+    */
+    set_time(time) {
+        wasm.circledrawer_set_time(this.ptr, time);
+    }
+    /**
+    * @param {boolean} bounded
+    */
+    set_bounded(bounded) {
+        wasm.circledrawer_set_bounded(this.ptr, bounded);
+    }
+    /**
+    * @param {boolean} value
+    */
+    set_should_wait_until_end(value) {
+        wasm.circledrawer_set_should_wait_until_end(this.ptr, value);
+    }
+    /**
+    * @returns {boolean}
+    */
+    is_finished() {
+        const ret = wasm.circledrawer_is_finished(this.ptr);
+        return ret !== 0;
+    }
+    /**
     */
     draw() {
         wasm.circledrawer_draw(this.ptr);

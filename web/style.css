@@ -21,7 +21,7 @@ main {
     display: flex;
 }
 
-#control-panel * {
+.control {
     height: 80%;
     margin: auto 0.5em;
     border-radius: 0.3em;
@@ -36,8 +36,14 @@ main {
 }
 
 #control-panel div,
-#control-panel span {
+#control-panel span,
+#control-panel ul,
+#control-panel li {
     border: none;
+}
+
+#control-panel div,
+#control-panel span{
     display: inline-block;
 }
 
@@ -63,4 +69,36 @@ main {
     border: 1px solid black;
     background: lightgray;
     width: min(70vw, 70vh);
+}
+
+
+.hidden {
+    display: none;
+}
+
+.param-list-wrapper {
+    position: absolute;
+    top: 2em;
+    width: 100vw;
+    height: fit-content;
+    background: white;
+    border-radius: 0;
+}
+
+.param-list {
+    list-style: none;
+    width: 90%;
+}
+
+.param {
+    display: block;
+    border-radius: 0;
+    margin: 0.5em 0;
+}
+
+.param input {
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    vertical-align: middle;
 }

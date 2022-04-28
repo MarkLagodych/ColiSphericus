@@ -102,6 +102,10 @@ impl CircleDrawer {
 
         for i in 0..(self.circles.len() - 1) {
 
+            if !self.circles[i].active {
+                break;
+            }
+
             if self.circles[i].out_of_bounds() {
                 self.circles[i].deactivate();
             }

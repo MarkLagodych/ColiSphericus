@@ -1,5 +1,6 @@
 target
 .junk
+.vscode
 *.ts
 wasm/.gitignore
 wasm/README.md

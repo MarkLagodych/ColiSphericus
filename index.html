@@ -9,22 +9,54 @@
     <link rel="stylesheet" type="text/css" href="./web/style.css">
 </head>
 <body>
-
     <div id="control-panel">
         <button
-            class="important-control"
+            class="control important-control"
             onclick="startDrawing()">
                 Малюй!
         </button>
 
-        <button onclick="stopDrawing()">Стоп!</button>
+        <button class="control" onclick="stopDrawing()">Стоп!</button>
 
-        <button onclick="clearDrawing()">Очистити</button>
+        <button class="control" onclick="clearDrawing()">Очистити</button>
 
-        <div>
-            <span>швидкість росту:</span>
-            <input id="speed" type="number" name="v" value="1"/>
+        <div class="control">
+            <span>швидкість:</span>
+            <input class="control" id="speed" type="number" value="1"/>
             <span>мм/с</span>
+        </div>
+
+        <div class="control">
+            <span>час:</span>
+            <input class="control" id="time" type="number" value="15"/>
+            <span>хв</span>
+        </div>
+
+        <button class="control" onclick="toggleParams()">Опції ▼</button>
+        <div id="paramList" class="param-list-wrapper hidden">
+            <ul class="param-list">
+                <li class="param"><input type="checkbox" id="param_bounded">
+                    Не виходити за межі
+                </input></li>
+                <li class="param"><input type="checkbox" id="param_wait">
+                    Дочекати закінчення росту колоній
+                </input></li>
+                <li class="param"><input type="checkbox" id="param_hungry">
+                    Голодні колонії
+                </input></li>
+                <li class="param">
+                    Генерувати дані:
+                </li>
+                <li class="param"><input type="checkbox" id="param_gen_St">
+                    S<sub>загальна</sub>(t)
+                </input></li>
+                <li class="param"><input type="checkbox" id="param_gen_Nt">
+                    N<sub>активних</sub>(t)
+                </input></li>
+                <li class="param"><input type="checkbox" id="param_gen_tt">
+                    t&nbsp;<sub>життя колоній</sub>(t)
+                </input></li>
+            </ul>
         </div>
     </div>
 
@@ -33,6 +65,8 @@
             HTMl5 not supported.
         </canvas>
     </main>
+
+    <script src="./web/paramlist.js"></script>
 
     <script type="module">
         import {default as init_wasm, CircleDrawer} from './wasm/wasm.js';

@@ -1,5 +1,9 @@
 # #4. Coli Sphericus
 
+## TODO
+
+- [ ] Реализовать чтение опций
+
 ## Build
 ```sh
 cargo install wasm-pack

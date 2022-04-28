@@ -73,7 +73,7 @@ main {
 
 
 .hidden {
-    display: none;
+    visibility: hidden;
 }
 
 .param-list-wrapper {

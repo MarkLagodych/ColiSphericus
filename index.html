@@ -66,7 +66,11 @@
         </canvas>
     </main>
 
-    <script src="./web/paramlist.js"></script>
+    <script>
+        function toggleParams() {
+            document.getElementById('paramList').classList.toggle('hidden');
+        }
+    </script>
 
     <script type="module">
         import {default as init_wasm, CircleDrawer} from './wasm/wasm.js';

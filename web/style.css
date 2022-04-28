@@ -77,7 +77,6 @@ main {
 }
 
 .param-list-wrapper {
-    visibility: inherit;
     position: absolute;
     top: 2em;
     width: 100vw;

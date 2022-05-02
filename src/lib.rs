@@ -27,6 +27,11 @@ pub struct CircleDrawer {
     should_gen_St: bool,
     should_gen_Nt: bool,
     should_gen_tt: bool,
+
+    // Generated data
+    data_S: Vec<f64>,
+    data_N: Vec<f64>,
+    data_t: Vec<f64>,
 }
 
 #[wasm_bindgen]
@@ -61,6 +66,10 @@ impl CircleDrawer {
             should_gen_St: false,
             should_gen_Nt: false,
             should_gen_tt: false,
+
+            data_S: vec![],
+            data_N: vec![],
+            data_t: vec![],
         }
     }
 
@@ -83,6 +92,9 @@ impl CircleDrawer {
         self.ctx.clear_rect(0., 0., 1000., 1000.);
         self.circles.clear();
         self.is_still_growing = false;
+        self.data_S.clear();
+        self.data_N.clear();
+        self.data_t.clear();
     }
 
     pub fn set_speed(&mut self, speed: f64) {
@@ -118,6 +130,21 @@ impl CircleDrawer {
         self.is_time_passed() && !self.is_still_growing
     }
 
+    /// Indicates if the current time is approximately equal to xxx.0
+    /// This is important because the time may not change by exactly 1 second
+    fn is_second_finished(&self) -> bool {
+        self.time - self.time.floor() <= self.iter_duration
+    }
+
+    pub fn set_gen_St(&mut self, value: bool) {
+        self.should_gen_St = value;
+    }
+
+
+    pub fn get_data_S(&self) -> js_sys::Float64Array {
+        js_sys::Float64Array::from(&self.data_S[..])
+    }
+
     fn can_put_circle(&self, circle: &Circle) -> bool {
         for my_circle in &self.circles {
             if my_circle.intersects(circle) {
@@ -138,7 +165,7 @@ impl CircleDrawer {
 
         if !self.is_time_passed() {
             // (nearly) every second
-            if self.time - self.time.floor() <= self.iter_duration {
+            if self.is_second_finished() {
                 // Create new circle
                 let mut circle = Circle::new_random_color();
 
@@ -160,11 +187,22 @@ impl CircleDrawer {
         }
 
         // 1. Draw circles;  2. Find out if there are still growing circles
-        self.is_still_growing = false;
+        self.is_still_growing = false; // TODO change to / add 0 to generate N(t) graph
         for circle in &self.circles {
             if circle.active {
                 self.is_still_growing = true;
                 self.draw_circle(circle);
+            }
+        }
+
+        // Generate data
+        if self.is_second_finished() {
+            if self.should_gen_St {
+                let mut S = 0.0f64;
+                for circle in &self.circles {
+                    S += circle.area();
+                }
+                self.data_S.push(S);
             }
         }
 

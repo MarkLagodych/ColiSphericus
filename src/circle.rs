@@ -1,6 +1,8 @@
 use rand;
 use wasm_bindgen::prelude::*;
 
+use std::f64;
+
 pub struct Circle {
     pub x: f64,
     pub y: f64,
@@ -62,5 +64,9 @@ impl Circle {
             || (self.r >= self.y)
             || (self.r >= (1000. - self.x))
             || (self.r >= (1000. - self.y))
+    }
+
+    pub fn area(&self) -> f64 {
+        f64::consts::PI * self.r.powf(2.)
     }
 }

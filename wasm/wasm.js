@@ -260,6 +260,19 @@ export class CircleDrawer {
         return ret !== 0;
     }
     /**
+    * @param {boolean} value
+    */
+    set_gen_St(value) {
+        wasm.circledrawer_set_gen_St(this.ptr, value);
+    }
+    /**
+    * @returns {Float64Array}
+    */
+    get_data_S() {
+        const ret = wasm.circledrawer_get_data_S(this.ptr);
+        return takeObject(ret);
+    }
+    /**
     */
     draw() {
         wasm.circledrawer_draw(this.ptr);
@@ -438,6 +451,14 @@ async function init(input) {
     imports.wbg.__wbg_length_0acb1cf9bbaf8519 = function(arg0) {
         const ret = getObject(arg0).length;
         return ret;
+    };
+    imports.wbg.__wbg_newwithbyteoffsetandlength_9f894ef425cd620e = function(arg0, arg1, arg2) {
+        const ret = new Float64Array(getObject(arg0), arg1 >>> 0, arg2 >>> 0);
+        return addHeapObject(ret);
+    };
+    imports.wbg.__wbg_new_9d1d89e7132c484e = function(arg0) {
+        const ret = new Float64Array(getObject(arg0));
+        return addHeapObject(ret);
     };
     imports.wbg.__wbg_newwithlength_8f0657faca9f1422 = function(arg0) {
         const ret = new Uint8Array(arg0 >>> 0);

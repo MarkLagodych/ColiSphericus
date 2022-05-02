@@ -9,6 +9,8 @@
     <link rel="stylesheet" type="text/css" href="./web/style.css">
 </head>
 <body>
+    <a id="downloader" target="_blank" download="data.csv" hidden></a>
+
     <div id="control-panel">
         <button
             class="control important-control"
@@ -72,7 +74,10 @@
                     <input type="number" id="param_iter_per_s" value="20"/>
                 </li>
             </ul>
+
         </div>
+            
+        <button class="control" onclick="downloadData()">Завантажити дані</button>
     </div>
 
     <main>
@@ -119,6 +124,9 @@
             drawer.set_time(getNum('time') * 60); // Minutes -> seconds
             drawer.set_bounded(isChecked('param_bounded'));
             drawer.set_should_wait_until_end(isChecked('param_wait'));
+
+            drawer.set_gen_St(isChecked('param_gen_St'));
+
             if (window.drawingIntervalObject === null)
                 window.drawingIntervalObject =
                     setInterval(step, 1000. / getNum('param_iter_per_s'));
@@ -134,7 +142,30 @@
         window.clearDrawing = function() {
             if (confirm("Точно очистити?"))
                 drawer.clear();
-        }
+        };
+
+        window.downloadData = function() {
+            let need_S = isChecked('param_gen_St');
+            let S = drawer.get_data_S();
+            let csv = '';
+
+            csv += '"t"';
+            if (need_S) csv += ',"S"';
+            csv += '\n';
+
+            let dataLength = S.length;
+            for (let t=0; t<dataLength; t++) {
+                csv += t;
+                csv += ',';
+                if (need_S) csv += S[t];
+                csv += '\n';
+            }
+
+            let downloader = document.getElementById('downloader');
+            downloader.href = 'data:attachment/text,' + encodeURI(csv);
+            downloader.click();
+            
+        };
     </script>
 </body>
 </html>

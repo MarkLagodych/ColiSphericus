@@ -24,13 +24,13 @@ pub struct CircleDrawer {
     is_bounded: bool,
     should_wait_until_end: bool,
     is_hungry: bool,
-    should_gen_St: bool,
-    should_gen_Nt: bool,
-    should_gen_tt: bool,
+    should_gen_S: bool,
+    should_gen_N: bool,
+    should_gen_t: bool,
 
     // Generated data
     data_S: Vec<f64>,
-    data_N: Vec<f64>,
+    data_N: Vec<i32>,
     data_t: Vec<f64>,
 }
 
@@ -63,9 +63,9 @@ impl CircleDrawer {
             is_bounded: false,
             should_wait_until_end: false,
             is_hungry: false,
-            should_gen_St: false,
-            should_gen_Nt: false,
-            should_gen_tt: false,
+            should_gen_S: false,
+            should_gen_N: false,
+            should_gen_t: false,
 
             data_S: vec![],
             data_N: vec![],
@@ -136,13 +136,21 @@ impl CircleDrawer {
         self.time - self.time.floor() <= self.iter_duration
     }
 
-    pub fn set_gen_St(&mut self, value: bool) {
-        self.should_gen_St = value;
+    pub fn set_gen_S(&mut self, value: bool) {
+        self.should_gen_S = value;
+    }
+
+    pub fn set_gen_N(&mut self, value: bool) {
+        self.should_gen_N = value;
     }
 
 
     pub fn get_data_S(&self) -> js_sys::Float64Array {
         js_sys::Float64Array::from(&self.data_S[..])
+    }
+
+    pub fn get_data_N(&self) -> js_sys::Int32Array {
+        js_sys::Int32Array::from(&self.data_N[..])
     }
 
     fn can_put_circle(&self, circle: &Circle) -> bool {
@@ -187,9 +195,11 @@ impl CircleDrawer {
         }
 
         // 1. Draw circles;  2. Find out if there are still growing circles
-        self.is_still_growing = false; // TODO change to / add 0 to generate N(t) graph
+        self.is_still_growing = false;
+        let mut n_active = 0i32;
         for circle in &self.circles {
             if circle.active {
+                n_active += 1;
                 self.is_still_growing = true;
                 self.draw_circle(circle);
             }
@@ -197,12 +207,16 @@ impl CircleDrawer {
 
         // Generate data
         if self.is_second_finished() {
-            if self.should_gen_St {
+            if self.should_gen_S {
                 let mut S = 0.0f64;
                 for circle in &self.circles {
                     S += circle.area();
                 }
                 self.data_S.push(S);
+            }
+
+            if self.should_gen_N {
+                self.data_N.push(n_active);
             }
         }
 

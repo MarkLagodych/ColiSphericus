@@ -262,14 +262,27 @@ export class CircleDrawer {
     /**
     * @param {boolean} value
     */
-    set_gen_St(value) {
-        wasm.circledrawer_set_gen_St(this.ptr, value);
+    set_gen_S(value) {
+        wasm.circledrawer_set_gen_S(this.ptr, value);
+    }
+    /**
+    * @param {boolean} value
+    */
+    set_gen_N(value) {
+        wasm.circledrawer_set_gen_N(this.ptr, value);
     }
     /**
     * @returns {Float64Array}
     */
     get_data_S() {
         const ret = wasm.circledrawer_get_data_S(this.ptr);
+        return takeObject(ret);
+    }
+    /**
+    * @returns {Int32Array}
+    */
+    get_data_N() {
+        const ret = wasm.circledrawer_get_data_N(this.ptr);
         return takeObject(ret);
     }
     /**
@@ -439,6 +452,14 @@ async function init(input) {
     };
     imports.wbg.__wbg_buffer_7af23f65f6c64548 = function(arg0) {
         const ret = getObject(arg0).buffer;
+        return addHeapObject(ret);
+    };
+    imports.wbg.__wbg_newwithbyteoffsetandlength_0d4e0750590b10dd = function(arg0, arg1, arg2) {
+        const ret = new Int32Array(getObject(arg0), arg1 >>> 0, arg2 >>> 0);
+        return addHeapObject(ret);
+    };
+    imports.wbg.__wbg_new_7fb6d86dfb4bf8c1 = function(arg0) {
+        const ret = new Int32Array(getObject(arg0));
         return addHeapObject(ret);
     };
     imports.wbg.__wbg_new_cc9018bd6f283b6f = function(arg0) {

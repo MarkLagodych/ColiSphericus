@@ -44,6 +44,9 @@
                 <li class="param"><input type="checkbox" id="param_hungry">
                     Голодні колонії
                 </input></li>
+
+                <br/>
+
                 <li class="param">
                     Генерувати дані:
                 </li>
@@ -56,13 +59,25 @@
                 <li class="param"><input type="checkbox" id="param_gen_tt">
                     t&nbsp;<sub>життя колоній</sub>(t)
                 </input></li>
+
+                <br/>
+
+                <li class="param">
+                    <span>Моделювати за ітерацію: </span>
+                    <input type="number" id="param_iter_duration" value="500"/>
+                    <span>мс</span>
+                </li>
+                <li class="param">
+                    <span>Здійснювати ітерацій за секунду: </span>
+                    <input type="number" id="param_iter_per_s" value="20"/>
+                </li>
             </ul>
         </div>
     </div>
 
     <main>
         <canvas id="canvas" width="1000" height="1000">
-            HTMl5 not supported.
+            HTML5 is required by this page but is not supported by your browser.
         </canvas>
     </main>
 
@@ -99,12 +114,14 @@
 
         window.drawingIntervalObject = null;
         window.startDrawing = function() {
+            drawer.set_iter_duration(getNum('param_iter_duration') / 1000.); // ms -> seconds
             drawer.set_speed(getNum('speed')); 
-            drawer.set_time(getNum('time') * 60); // Mins -> seconds
+            drawer.set_time(getNum('time') * 60); // Minutes -> seconds
             drawer.set_bounded(isChecked('param_bounded'));
             drawer.set_should_wait_until_end(isChecked('param_wait'));
             if (window.drawingIntervalObject === null)
-                window.drawingIntervalObject = setInterval(step, 100);
+                window.drawingIntervalObject =
+                    setInterval(step, 1000. / getNum('param_iter_per_s'));
         };
 
         window.stopDrawing = function() {

@@ -15,8 +15,9 @@ use circle::*;
 pub struct CircleDrawer {
     ctx: web_sys::CanvasRenderingContext2d,
     circles: Vec<Circle>,
-    speed: f64,
-    time: i32, /// SECONDS!!!
+    speed: f64, /// mm/s
+    time: f64, /// s
+    iter_duration: f64, /// s - Duration of modulation performed each iteration
     is_still_growing: bool,
 
     // Parameters
@@ -50,7 +51,8 @@ impl CircleDrawer {
             ctx: context,
             circles: vec![],
             speed: 0.2,
-            time: 15 * 60,
+            time: 15. * 60.,
+            iter_duration: 1000.,
             is_still_growing: false,
 
             is_bounded: false,
@@ -88,8 +90,12 @@ impl CircleDrawer {
     }
 
     pub fn set_time(&mut self, time: f64) {
-        self.time = time.ceil() as i32;
+        self.time = time;
         self.is_still_growing = true;
+    }
+
+    pub fn set_iter_duration(&mut self, value: f64) {
+        self.iter_duration = value;
     }
 
     pub fn set_bounded(&mut self, bounded: bool) {
@@ -101,11 +107,11 @@ impl CircleDrawer {
     }
 
     fn is_time_passed(&self) -> bool {
-        self.time <= 0
+        self.time <= 0.
     }
 
     fn tick(&mut self) {
-        self.time -= 1;
+        self.time -= self.iter_duration;
     }
 
     pub fn is_finished(&self) -> bool {
@@ -121,7 +127,6 @@ impl CircleDrawer {
 
         true
     }
-
     
 
     pub fn draw(&mut self) {
@@ -132,23 +137,26 @@ impl CircleDrawer {
         }
 
         if !self.is_time_passed() {
-            // Create new circle
-            let mut circle = Circle::new_random_color();
+            // (nearly) every second
+            if self.time - self.time.floor() <= self.iter_duration {
+                // Create new circle
+                let mut circle = Circle::new_random_color();
 
-            let mut rng = rand::thread_rng();
-            loop {
-                circle.x = rng.gen_range(0. ..1000.);
-                circle.y = rng.gen_range(0. ..1000.);
-                if self.can_put_circle(&circle) {
-                    break;
+                let mut rng = rand::thread_rng();
+                loop {
+                    circle.x = rng.gen_range(0. ..1000.);
+                    circle.y = rng.gen_range(0. ..1000.);
+                    if self.can_put_circle(&circle) {
+                        break;
+                    }
                 }
-            }
 
-            self.circles.push(circle);
+                self.circles.push(circle);
+            }
         }
 
         for circle in &mut self.circles {
-            circle.grow(self.speed);
+            circle.grow(self.speed * self.iter_duration);
         }
 
         // 1. Draw circles;  2. Find out if there are still growing circles

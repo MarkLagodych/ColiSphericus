@@ -235,6 +235,12 @@ export class CircleDrawer {
         wasm.circledrawer_set_time(this.ptr, time);
     }
     /**
+    * @param {number} value
+    */
+    set_iter_duration(value) {
+        wasm.circledrawer_set_iter_duration(this.ptr, value);
+    }
+    /**
     * @param {boolean} bounded
     */
     set_bounded(bounded) {

@@ -9,6 +9,7 @@ pub struct Circle {
     pub r: f64,
     pub fill_style: JsValue,
     pub active: bool,
+    pub life_length: f64,
 }
 
 impl PartialEq for Circle {
@@ -27,6 +28,7 @@ impl Circle {
             r,
             fill_style: JsValue::from_str(fill_style),
             active: true,
+            life_length: 0.,
         }
     }
 
@@ -48,6 +50,12 @@ impl Circle {
     pub fn grow(&mut self, speed: f64) {
         if self.active {
             self.r += speed;
+        }
+    }
+
+    pub fn grow_old(&mut self, time: f64) {
+        if self.active {
+            self.life_length += time;
         }
     }
 

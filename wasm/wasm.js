@@ -272,6 +272,12 @@ export class CircleDrawer {
         wasm.circledrawer_set_gen_N(this.ptr, value);
     }
     /**
+    * @param {boolean} value
+    */
+    set_gen_T(value) {
+        wasm.circledrawer_set_gen_T(this.ptr, value);
+    }
+    /**
     * @returns {Float64Array}
     */
     get_data_S() {
@@ -283,6 +289,13 @@ export class CircleDrawer {
     */
     get_data_N() {
         const ret = wasm.circledrawer_get_data_N(this.ptr);
+        return takeObject(ret);
+    }
+    /**
+    * @returns {Float64Array}
+    */
+    get_data_t() {
+        const ret = wasm.circledrawer_get_data_t(this.ptr);
         return takeObject(ret);
     }
     /**

@@ -58,8 +58,8 @@
                 <li class="param"><input type="checkbox" id="param_gen_Nt">
                     N<sub>активних</sub>(t)
                 </input></li>
-                <li class="param"><input type="checkbox" id="param_gen_tt">
-                    t&nbsp;<sub>життя колоній</sub>(t)
+                <li class="param"><input type="checkbox" id="param_gen_Tt">
+                    T<sub>життя колоній</sub>(t)
                 </input></li>
 
                 <br/>
@@ -127,6 +127,7 @@
 
             drawer.set_gen_S(isChecked('param_gen_St'));
             drawer.set_gen_N(isChecked('param_gen_Nt'));
+            drawer.set_gen_T(isChecked('param_gen_Tt'));
 
             if (window.drawingIntervalObject === null)
                 window.drawingIntervalObject =
@@ -148,20 +149,24 @@
         window.downloadData = function() {
             let need_S = isChecked('param_gen_St');
             let need_N = isChecked('param_gen_Nt');
+            let need_T = isChecked('param_gen_Tt');
             let S = drawer.get_data_S();
             let N = drawer.get_data_N();
+            let T = drawer.get_data_t();
             let csv = '';
 
             csv += '"t"';
             if (need_S) csv += ',"S"';
             if (need_N) csv += ',"N"';
+            if (need_T) csv += ',"T"';
             csv += '\n';
 
-            let dataLength = Math.max(S.length, N.length);
+            let dataLength = Math.max(S.length, N.length, T.length);
             for (let t=0; t<dataLength; t++) {
                 csv += t;
                 if (need_S) csv += ',' + S[t];
                 if (need_N) csv += ',' + N[t];
+                if (need_T) csv += ',' + T[t];
                 csv += '\n';
             }
 

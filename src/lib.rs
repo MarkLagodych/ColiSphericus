@@ -26,12 +26,12 @@ pub struct CircleDrawer {
     is_hungry: bool,
     should_gen_S: bool,
     should_gen_N: bool,
-    should_gen_t: bool,
+    should_gen_T: bool,
 
     // Generated data
     data_S: Vec<f64>,
     data_N: Vec<i32>,
-    data_t: Vec<f64>,
+    data_T: Vec<f64>,
 }
 
 #[wasm_bindgen]
@@ -65,11 +65,11 @@ impl CircleDrawer {
             is_hungry: false,
             should_gen_S: false,
             should_gen_N: false,
-            should_gen_t: false,
+            should_gen_T: false,
 
             data_S: vec![],
             data_N: vec![],
-            data_t: vec![],
+            data_T: vec![],
         }
     }
 
@@ -94,7 +94,7 @@ impl CircleDrawer {
         self.is_still_growing = false;
         self.data_S.clear();
         self.data_N.clear();
-        self.data_t.clear();
+        self.data_T.clear();
     }
 
     pub fn set_speed(&mut self, speed: f64) {
@@ -144,6 +144,10 @@ impl CircleDrawer {
         self.should_gen_N = value;
     }
 
+    pub fn set_gen_T(&mut self, value: bool) {
+        self.should_gen_T = value;
+    }
+
 
     pub fn get_data_S(&self) -> js_sys::Float64Array {
         js_sys::Float64Array::from(&self.data_S[..])
@@ -151,6 +155,14 @@ impl CircleDrawer {
 
     pub fn get_data_N(&self) -> js_sys::Int32Array {
         js_sys::Int32Array::from(&self.data_N[..])
+    }
+
+    pub fn get_data_t(&self) -> js_sys::Float64Array {
+        let mut t = Vec::<f64>::new();
+        for circle in &self.circles {
+            t.push(circle.life_length);
+        }
+        js_sys::Float64Array::from(&t[..])
     }
 
     fn can_put_circle(&self, circle: &Circle) -> bool {
@@ -192,6 +204,7 @@ impl CircleDrawer {
 
         for circle in &mut self.circles {
             circle.grow(self.speed * self.iter_duration);
+            circle.grow_old(self.iter_duration);
         }
 
         // 1. Draw circles;  2. Find out if there are still growing circles

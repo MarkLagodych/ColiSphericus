@@ -76,6 +76,6 @@ impl Circle {
 
     /// Returns: square metres
     pub fn area(&self) -> f64 {
-        f64::consts::PI * self.r.powf(2.) / 10e6 // metre^2 contains 10^6 millimetre^2
+        f64::consts::PI * self.r.powf(2.) / 1e6 // metre^2 contains 10^6 millimetre^2
     }
 }

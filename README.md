@@ -2,7 +2,6 @@
 
 ## TODO
 
-- [ ] t(t)
 - [ ] Голодные бактерии
 - [ ] 3Д
 
@@ -14,3 +13,8 @@ cargo install wasm-pack
 
 ## Run
 Use a local server.
+
+## Plot graphs
+```sh
+gnuplot -e "file='data/data-v#-t#.csv'" plot.gnuplot 
+```

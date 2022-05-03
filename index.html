@@ -156,9 +156,9 @@
             let csv = '';
 
             csv += '"t"';
-            if (need_S) csv += ',"S"';
-            if (need_N) csv += ',"N"';
-            if (need_T) csv += ',"T"';
+            if (need_S) csv += ',"S, м²"';
+            if (need_N) csv += ',"N активних"';
+            if (need_T) csv += ',"T життя, с"';
             csv += '\n';
 
             let dataLength = Math.max(S.length, N.length, T.length);

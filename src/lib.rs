@@ -191,8 +191,8 @@ impl CircleDrawer {
 
                 let mut rng = rand::thread_rng();
                 loop {
-                    circle.x = rng.gen_range(0. ..1000.);
-                    circle.y = rng.gen_range(0. ..1000.);
+                    circle.x = rng.gen_range(0. .. 1000.);
+                    circle.y = rng.gen_range(0. .. 1000.);
                     if self.can_put_circle(&circle) {
                         break;
                     }
@@ -204,7 +204,7 @@ impl CircleDrawer {
 
         for circle in &mut self.circles {
             circle.grow(self.speed * self.iter_duration);
-            circle.grow_old(self.iter_duration);
+            circle.grow_older(self.iter_duration);
         }
 
         // 1. Draw circles;  2. Find out if there are still growing circles

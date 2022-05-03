@@ -53,7 +53,7 @@ impl Circle {
         }
     }
 
-    pub fn grow_old(&mut self, time: f64) {
+    pub fn grow_older(&mut self, time: f64) {
         if self.active {
             self.life_length += time;
         }
@@ -74,7 +74,8 @@ impl Circle {
             || (self.r >= (1000. - self.y))
     }
 
+    /// Returns: square metres
     pub fn area(&self) -> f64 {
-        f64::consts::PI * self.r.powf(2.)
+        f64::consts::PI * self.r.powf(2.) / 10e6 // metre^2 contains 10^6 millimetre^2
     }
 }

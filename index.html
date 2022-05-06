@@ -37,7 +37,7 @@
         <button class="control" onclick="toggleParams()">Опції ▼</button>
         <div id="paramList" class="param-list-wrapper hidden">
             <ul class="param-list">
-                <li class="param"><input type="checkbox" id="param_bounded">
+                <li class="param"><input type="checkbox" id="param_bounded" checked>
                     Не виходити за межі
                 </input></li>
                 <li class="param"><input type="checkbox" id="param_wait">
@@ -46,6 +46,11 @@
                 <li class="param"><input type="checkbox" id="param_hungry">
                     Голодні колонії
                 </input></li>
+
+                <li class="param">
+                    <span>Вбивча доза сусідів: </span>
+                    <input type="number" id="param_neighbour_limit" value="5"/>
+                </li>
 
                 <br/>
 
@@ -65,13 +70,13 @@
                 <br/>
 
                 <li class="param">
-                    <span>Моделювати за ітерацію: </span>
-                    <input type="number" id="param_iter_duration" value="500"/>
-                    <span>мс</span>
+                    <span>Здійснювати ітерацій для моделювання 1 секунди: </span>
+                    <input type="number" id="param_iter_per_sec" value="2"/>
                 </li>
                 <li class="param">
-                    <span>Здійснювати ітерацій за секунду: </span>
-                    <input type="number" id="param_iter_per_s" value="20"/>
+                    <span>Частота: </span>
+                    <input type="number" id="param_freq" value="20"/>
+                    <span>ітерацій за секунду</span>
                 </li>
             </ul>
 
@@ -119,11 +124,23 @@
 
         window.drawingIntervalObject = null;
         window.startDrawing = function() {
-            drawer.set_iter_duration(getNum('param_iter_duration') / 1000.); // ms -> seconds
+            if (getNum('param_iter_per_sec') == 0) {
+                alert('Кількість ітерацій за секунду не має бути 0!!!');
+                return;
+            }
+
+            if (getNum('param_freq') == 0) {
+                alert('Частота не має бути 0!!!');
+                return;
+            }
+
+            drawer.set_iter_per_sec(getNum('param_iter_per_sec'));
             drawer.set_speed(getNum('speed')); 
             drawer.set_time(getNum('time') * 60); // Minutes -> seconds
             drawer.set_bounded(isChecked('param_bounded'));
             drawer.set_should_wait_until_end(isChecked('param_wait'));
+            drawer.set_hungry(isChecked('param_hungry'));
+            drawer.set_neighbour_limit(getNum('param_neighbour_limit'));
 
             drawer.set_gen_S(isChecked('param_gen_St'));
             drawer.set_gen_N(isChecked('param_gen_Nt'));
@@ -131,7 +148,7 @@
 
             if (window.drawingIntervalObject === null)
                 window.drawingIntervalObject =
-                    setInterval(step, 1000. / getNum('param_iter_per_s'));
+                    setInterval(step, 1000. / getNum('param_freq'));
         };
 
         window.stopDrawing = function() {
@@ -152,7 +169,7 @@
             let need_T = isChecked('param_gen_Tt');
             let S = drawer.get_data_S();
             let N = drawer.get_data_N();
-            let T = drawer.get_data_t();
+            let T = drawer.get_data_T();
             let csv = '';
 
             csv += '"t"';

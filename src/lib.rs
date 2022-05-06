@@ -8,7 +8,9 @@ use rand::Rng;
 
 use std::f64;
 
-mod circle;
+pub mod consts;
+pub mod circle;
+use consts::*;
 use circle::*;
 
 #[wasm_bindgen]
@@ -16,14 +18,17 @@ pub struct CircleDrawer {
     ctx: web_sys::CanvasRenderingContext2d,
     circles: Vec<Circle>,
     speed: f64, /// mm/s
-    time: f64, /// s
-    iter_duration: f64, /// s - Duration of modulation performed each iteration
+    time: f64, /// s - Overall time (Set every time you click "Begin drawing")
+    clock: f64, /// s - Time counter
+    iter_per_sec: i32, /// s - Duration of modulation performed each iteration
+    next_circle_id: i32, /// ID to assign to the next circle
     is_still_growing: bool,
 
     // Parameters
     is_bounded: bool,
     should_wait_until_end: bool,
     is_hungry: bool,
+    neighbour_limit: i32,
     should_gen_S: bool,
     should_gen_N: bool,
     should_gen_T: bool,
@@ -55,14 +60,17 @@ impl CircleDrawer {
         Self {
             ctx: context,
             circles: vec![],
-            speed: 0.2,
-            time: 15. * 60.,
-            iter_duration: 1000.,
+            speed: INITIAL_SPEED,
+            time: INITIAL_TIME,
+            clock: 0.,
+            iter_per_sec: 1,
+            next_circle_id: 0,
             is_still_growing: false,
 
             is_bounded: false,
             should_wait_until_end: false,
             is_hungry: false,
+            neighbour_limit: INITIAL_NEIGHBOUR_LIMIT,
             should_gen_S: false,
             should_gen_N: false,
             should_gen_T: false,
@@ -88,13 +96,19 @@ impl CircleDrawer {
         self.ctx.fill();
     }
 
+    pub fn clear_canvas(&self) {
+        self.ctx.clear_rect(0., 0., CANVAS_SIZE, CANVAS_SIZE);
+    }
+
     pub fn clear(&mut self) {
-        self.ctx.clear_rect(0., 0., 1000., 1000.);
+        self.clear_canvas();
         self.circles.clear();
         self.is_still_growing = false;
         self.data_S.clear();
         self.data_N.clear();
         self.data_T.clear();
+        self.clock = 0.;
+        self.next_circle_id = 0;
     }
 
     pub fn set_speed(&mut self, speed: f64) {
@@ -106,8 +120,8 @@ impl CircleDrawer {
         self.is_still_growing = true;
     }
 
-    pub fn set_iter_duration(&mut self, value: f64) {
-        self.iter_duration = value;
+    pub fn set_iter_per_sec(&mut self, value: i32) {
+        self.iter_per_sec = value;
     }
 
     pub fn set_bounded(&mut self, bounded: bool) {
@@ -119,21 +133,26 @@ impl CircleDrawer {
     }
 
     fn is_time_passed(&self) -> bool {
-        self.time <= 0.
+        self.clock >= self.time
+    }
+
+    /// Returns time modeled by 1 iteration
+    fn tick_time(&self) -> f64 {
+        1. / self.iter_per_sec as f64
     }
 
     fn tick(&mut self) {
-        self.time -= self.iter_duration;
+        self.clock += self.tick_time();
     }
 
     pub fn is_finished(&self) -> bool {
         self.is_time_passed() && !self.is_still_growing
     }
 
-    /// Indicates if the current time is approximately equal to xxx.0
+    /// Indicates if the current time (self.clock) is approximately equal to xxx.0
     /// This is important because the time may not change by exactly 1 second
     fn is_second_finished(&self) -> bool {
-        self.time - self.time.floor() <= self.iter_duration
+        self.clock - self.clock.floor() < self.tick_time()
     }
 
     pub fn set_gen_S(&mut self, value: bool) {
@@ -148,6 +167,14 @@ impl CircleDrawer {
         self.should_gen_T = value;
     }
 
+    pub fn set_hungry(&mut self, value: bool) {
+        self.is_hungry = value;
+    }
+
+    pub fn set_neighbour_limit(&mut self, value: i32) {
+        self.neighbour_limit = value;
+    }
+
 
     pub fn get_data_S(&self) -> js_sys::Float64Array {
         js_sys::Float64Array::from(&self.data_S[..])
@@ -157,12 +184,8 @@ impl CircleDrawer {
         js_sys::Int32Array::from(&self.data_N[..])
     }
 
-    pub fn get_data_t(&self) -> js_sys::Float64Array {
-        let mut t = Vec::<f64>::new();
-        for circle in &self.circles {
-            t.push(circle.life_length);
-        }
-        js_sys::Float64Array::from(&t[..])
+    pub fn get_data_T(&self) -> js_sys::Float64Array {
+        js_sys::Float64Array::from(&self.data_T[..])
     }
 
     fn can_put_circle(&self, circle: &Circle) -> bool {
@@ -178,6 +201,7 @@ impl CircleDrawer {
 
     pub fn draw(&mut self) {
         self.tick();
+        let tick_time = self.tick_time();
 
         if self.is_time_passed() && !(self.should_wait_until_end && self.is_still_growing) {
             return;
@@ -187,34 +211,43 @@ impl CircleDrawer {
             // (nearly) every second
             if self.is_second_finished() {
                 // Create new circle
-                let mut circle = Circle::new_random_color();
+                let mut circle = Circle::new_random_color(self.next_circle_id);
 
                 let mut rng = rand::thread_rng();
                 loop {
-                    circle.x = rng.gen_range(0. .. 1000.);
-                    circle.y = rng.gen_range(0. .. 1000.);
+                    circle.x = rng.gen_range(0. .. CANVAS_SIZE);
+                    circle.y = rng.gen_range(0. .. CANVAS_SIZE);
                     if self.can_put_circle(&circle) {
                         break;
                     }
                 }
 
                 self.circles.push(circle);
+                
+                if self.should_gen_T {
+                    self.data_T.push(0.);
+                }
+
+                self.next_circle_id += 1;
             }
         }
 
         for circle in &mut self.circles {
-            circle.grow(self.speed * self.iter_duration);
-            circle.grow_older(self.iter_duration);
+            circle.grow(self.speed * tick_time);
+            circle.grow_older(tick_time);
         }
+
+        self.clear_canvas();
 
         // 1. Draw circles;  2. Find out if there are still growing circles
         self.is_still_growing = false;
         let mut n_active = 0i32;
         for circle in &self.circles {
-            if circle.active {
+            self.draw_circle(circle);
+
+            if circle.is_active {
                 n_active += 1;
                 self.is_still_growing = true;
-                self.draw_circle(circle);
             }
         }
 
@@ -231,7 +264,21 @@ impl CircleDrawer {
             if self.should_gen_N {
                 self.data_N.push(n_active);
             }
+
+            if self.should_gen_T {
+                for circle in &self.circles {
+                    self.data_T[circle.id as usize] = circle.life_length;
+                }
+            }
         }
+
+
+        if self.is_hungry {
+            for circle in &mut self.circles {
+                circle.clear_neighbours();
+            }
+        }
+
 
         for i in 0..(self.circles.len() - 1) {
 
@@ -246,7 +293,20 @@ impl CircleDrawer {
                 if c1.intersects(c2) {
                     self.circles[i].deactivate();
                     self.circles[j].deactivate();
+                    self.circles[i].add_neighbour();
+                    self.circles[j].add_neighbour();
                 }
+            }
+        }
+
+        if self.is_hungry {
+            let mut i = 0;
+            while i < self.circles.len() {
+                if self.circles[i].is_jammed(self.neighbour_limit) {
+                    self.circles.remove(i);
+                    continue;
+                }
+                i += 1;
             }
         }
     }

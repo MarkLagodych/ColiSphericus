@@ -219,6 +219,11 @@ export class CircleDrawer {
     }
     /**
     */
+    clear_canvas() {
+        wasm.circledrawer_clear_canvas(this.ptr);
+    }
+    /**
+    */
     clear() {
         wasm.circledrawer_clear(this.ptr);
     }
@@ -237,8 +242,8 @@ export class CircleDrawer {
     /**
     * @param {number} value
     */
-    set_iter_duration(value) {
-        wasm.circledrawer_set_iter_duration(this.ptr, value);
+    set_iter_per_sec(value) {
+        wasm.circledrawer_set_iter_per_sec(this.ptr, value);
     }
     /**
     * @param {boolean} bounded
@@ -278,6 +283,18 @@ export class CircleDrawer {
         wasm.circledrawer_set_gen_T(this.ptr, value);
     }
     /**
+    * @param {boolean} value
+    */
+    set_hungry(value) {
+        wasm.circledrawer_set_hungry(this.ptr, value);
+    }
+    /**
+    * @param {number} value
+    */
+    set_neighbour_limit(value) {
+        wasm.circledrawer_set_neighbour_limit(this.ptr, value);
+    }
+    /**
     * @returns {Float64Array}
     */
     get_data_S() {
@@ -294,8 +311,8 @@ export class CircleDrawer {
     /**
     * @returns {Float64Array}
     */
-    get_data_t() {
-        const ret = wasm.circledrawer_get_data_t(this.ptr);
+    get_data_T() {
+        const ret = wasm.circledrawer_get_data_T(this.ptr);
         return takeObject(ret);
     }
     /**

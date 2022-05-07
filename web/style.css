@@ -1,24 +1,19 @@
 html, body {
     width: 100vw;
     height: 100vh;
-    background: #93a3aa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin: 0;
     padding: 0;
-    /* display: flex; */
-    font-family: Arial, Helvetica, sans-serif
 }
 
-main {
-    margin: auto;
-    width: fit-content;
-}
-
+/*
 #control-panel {
     width: 100vw;
     top: 0;
-    height: 2em;
+    height: 7vh;
     background: white;
-    display: flex;
 }
 
 .control {
@@ -75,7 +70,7 @@ main {
 .hidden {
     visibility: hidden;
 }
-
+/*
 .param-list-wrapper {
     position: absolute;
     top: 2em;
@@ -103,4 +98,4 @@ main {
     padding: 0;
     display: inline-flex;
     vertical-align: middle;
-}
+}*/

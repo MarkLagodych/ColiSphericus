@@ -32,6 +32,7 @@ pub struct CircleDrawer {
     should_gen_S: bool,
     should_gen_N: bool,
     should_gen_T: bool,
+    dimensions: i32, /// 1/2/3 for 1D/2D/3D
 
     // Generated data
     data_S: Vec<f64>,
@@ -74,6 +75,8 @@ impl CircleDrawer {
             should_gen_S: false,
             should_gen_N: false,
             should_gen_T: false,
+
+            dimensions: 2,
 
             data_S: vec![],
             data_N: vec![],
@@ -132,6 +135,11 @@ impl CircleDrawer {
         self.should_wait_until_end = value;
     }
 
+    pub fn set_dimensions(&mut self, value: i32) {
+        self.dimensions = value;
+    }
+
+
     fn is_time_passed(&self) -> bool {
         self.clock >= self.time
     }
@@ -188,6 +196,19 @@ impl CircleDrawer {
         js_sys::Float64Array::from(&self.data_T[..])
     }
 
+    /// Returns a sorted array of area/volumes of the circles that are present on the field
+    pub fn get_data_size_distrib(&self) -> js_sys::Float64Array {
+        let mut sizes = Vec::<f64>::new();
+
+        for circle in &self.circles {
+            sizes.push(circle.get_size(self.dimensions));
+        }
+
+        sizes.sort_by(|a, b| a.partial_cmp(b).unwrap());
+
+        js_sys::Float64Array::from(&sizes[..])
+    }
+
     fn can_put_circle(&self, circle: &Circle) -> bool {
         for my_circle in &self.circles {
             if my_circle.intersects(circle) {
@@ -198,6 +219,13 @@ impl CircleDrawer {
         true
     }
     
+    fn has_y(&self) -> bool {
+        self.dimensions >= 2
+    }
+
+    fn has_z(&self) -> bool {
+        self.dimensions >= 3
+    }
 
     pub fn draw(&mut self) {
         self.tick();
@@ -216,7 +244,19 @@ impl CircleDrawer {
                 let mut rng = rand::thread_rng();
                 loop {
                     circle.x = rng.gen_range(0. .. CANVAS_SIZE);
-                    circle.y = rng.gen_range(0. .. CANVAS_SIZE);
+
+                    circle.y =
+                        if self.has_y()
+                            {rng.gen_range(0. .. CANVAS_SIZE)}
+                        else
+                            {0.5};
+
+                    circle.z =
+                        if self.has_z()
+                            {rng.gen_range(0. .. CANVAS_SIZE)}
+                        else
+                            {0.5};
+                            
                     if self.can_put_circle(&circle) {
                         break;
                     }
@@ -256,7 +296,7 @@ impl CircleDrawer {
             if self.should_gen_S {
                 let mut S = 0.0f64;
                 for circle in &self.circles {
-                    S += circle.area();
+                    S += circle.get_size(self.dimensions);
                 }
                 self.data_S.push(S);
             }

@@ -280,17 +280,14 @@ impl CircleDrawer {
         }
 
 
-        for i in 0..(self.circles.len() - 1) {
+        for i in 0..self.circles.len() {
 
             if self.is_bounded && self.circles[i].out_of_bounds() {
                 self.circles[i].deactivate();
             }
 
             for j in (i + 1)..self.circles.len() {
-                let c1 = &self.circles[i];
-                let c2 = &self.circles[j];
-
-                if c1.intersects(c2) {
+                if self.circles[i].intersects(&self.circles[j]) {
                     self.circles[i].deactivate();
                     self.circles[j].deactivate();
                     self.circles[i].add_neighbour();
@@ -298,6 +295,7 @@ impl CircleDrawer {
                 }
             }
         }
+
 
         if self.is_hungry {
             let mut i = 0;
@@ -309,5 +307,6 @@ impl CircleDrawer {
                 i += 1;
             }
         }
+
     }
 }

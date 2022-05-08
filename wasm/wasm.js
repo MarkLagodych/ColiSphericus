@@ -258,6 +258,12 @@ export class CircleDrawer {
         wasm.circledrawer_set_should_wait_until_end(this.ptr, value);
     }
     /**
+    * @param {number} value
+    */
+    set_dimensions(value) {
+        wasm.circledrawer_set_dimensions(this.ptr, value);
+    }
+    /**
     * @returns {boolean}
     */
     is_finished() {
@@ -313,6 +319,14 @@ export class CircleDrawer {
     */
     get_data_T() {
         const ret = wasm.circledrawer_get_data_T(this.ptr);
+        return takeObject(ret);
+    }
+    /**
+    * Returns a sorted array of area/volumes of the circles that are present on the field
+    * @returns {Float64Array}
+    */
+    get_data_size_distrib() {
+        const ret = wasm.circledrawer_get_data_size_distrib(this.ptr);
         return takeObject(ret);
     }
     /**

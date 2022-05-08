@@ -249,13 +249,13 @@ impl CircleDrawer {
                         if self.has_y()
                             {rng.gen_range(0. .. CANVAS_SIZE)}
                         else
-                            {0.5};
+                            {CANVAS_SIZE / 2.};
 
                     circle.z =
                         if self.has_z()
                             {rng.gen_range(0. .. CANVAS_SIZE)}
                         else
-                            {0.5};
+                            {CANVAS_SIZE / 2.};
                             
                     if self.can_put_circle(&circle) {
                         break;
@@ -330,8 +330,11 @@ impl CircleDrawer {
                 if self.circles[i].intersects(&self.circles[j]) {
                     self.circles[i].deactivate();
                     self.circles[j].deactivate();
-                    self.circles[i].add_neighbour();
-                    self.circles[j].add_neighbour();
+
+                    if self.is_hungry {
+                        self.circles[i].add_neighbour();
+                        self.circles[j].add_neighbour();
+                    }
                 }
             }
         }
@@ -343,6 +346,8 @@ impl CircleDrawer {
                 if self.circles[i].is_jammed(self.neighbour_limit) {
                     self.circles.remove(i);
                     continue;
+                } else if self.circles[i].is_free() {
+                    self.circles[i].activate();
                 }
                 i += 1;
             }

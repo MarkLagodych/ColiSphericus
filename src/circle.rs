@@ -67,6 +67,10 @@ impl Circle {
         }
     }
 
+    pub fn activate(&mut self) {
+        self.is_active = true;
+    }
+
     pub fn deactivate(&mut self) {
         self.is_active = false;
     }
@@ -80,9 +84,9 @@ impl Circle {
     }
 
     pub fn out_of_bounds(&self) -> bool {
-        (self.x >= self.r)
+        (self.x <= self.r)
             || (self.y <= self.r)
-            || (self.z <= self.z)
+            || (self.z <= self.r)
             || (self.x + self.r >= CANVAS_SIZE)
             || (self.y + self.r >= CANVAS_SIZE)
             || (self.z + self.r >= CANVAS_SIZE)
@@ -123,5 +127,9 @@ impl Circle {
     // Returns true if there are too many neighbours
     pub fn is_jammed(&self, limit: i32) -> bool {
         self.n_neighbours >= limit
+    }
+
+    pub fn is_free(&self) -> bool {
+        self.n_neighbours == 0
     }
 }

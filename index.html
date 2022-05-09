@@ -50,19 +50,6 @@
                 <span class="input-group-text">хв</span>
             </div>
 
-            <script>
-                'use strict';
-                
-                window.onload = () => {
-                    let options = {
-                        html: true,
-                        content: document.getElementById('popover')
-                    }
-
-                    let exampleEl = document.getElementById('popbtn')
-                    let popover = new bootstrap.Popover(exampleEl, options)
-                }
-            </script>
             <div style="display: none; visibility: hidden;">
                 <div id="popover" class="param-list-wrapper">
                     <form>
@@ -142,6 +129,79 @@
     <script type="module">
         import { default as init_wasm, CircleDrawer } from './wasm/wasm.js';
 
+        let param_gen_St
+        let param_gen_Nt
+        let param_gen_Tt
+        let param_iter_per_sec
+        let speed
+        let time
+        let param_bounded
+        let param_wait
+        let param_hungry
+        let param_neighbour_limit
+        let param_freq
+
+        window.onload = () => {
+            let options = {
+                html: true,
+                content: document.getElementById('popover')
+            }
+
+            let exampleEl = document.getElementById('popbtn')
+            let popover = new bootstrap.Popover(exampleEl, options)
+            exampleEl.addEventListener('inserted.bs.popover', () => {
+                param_gen_St = isChecked('param_gen_St')
+                param_gen_Nt = isChecked('param_gen_Nt')
+                param_gen_Tt = isChecked('param_gen_Tt')
+                param_iter_per_sec = getNum('param_iter_per_sec')
+                speed = getNum('speed')
+                time = getNum('time')
+                param_bounded = isChecked('param_bounded')
+                param_wait = isChecked('param_wait')
+                param_hungry = isChecked('param_hungry')
+                param_neighbour_limit = getNum('param_neighbour_limit')
+                param_freq = getNum('param_freq')
+
+                console.log(param_gen_St)
+                console.log(param_gen_Nt)
+                console.log(param_gen_Tt)
+                console.log(param_iter_per_sec)
+                console.log(speed)
+                console.log(time)
+                console.log(param_bounded)
+                console.log(param_wait)
+                console.log(param_hungry)
+                console.log(param_neighbour_limit)
+                console.log(param_freq)
+            })
+
+            exampleEl.addEventListener('hide.bs.popover', () => {
+                param_gen_St = isChecked('param_gen_St')
+                param_gen_Nt = isChecked('param_gen_Nt')
+                param_gen_Tt = isChecked('param_gen_Tt')
+                param_iter_per_sec = getNum('param_iter_per_sec')
+                speed = getNum('speed')
+                time = getNum('time')
+                param_bounded = isChecked('param_bounded')
+                param_wait = isChecked('param_wait')
+                param_hungry = isChecked('param_hungry')
+                param_neighbour_limit = getNum('param_neighbour_limit')
+                param_freq = getNum('param_freq')
+
+                console.log(param_gen_St)
+                console.log(param_gen_Nt)
+                console.log(param_gen_Tt)
+                console.log(param_iter_per_sec)
+                console.log(speed)
+                console.log(time)
+                console.log(param_bounded)
+                console.log(param_wait)
+                console.log(param_hungry)
+                console.log(param_neighbour_limit)
+                console.log(param_freq)
+            })
+        }
+
         var drawer;
 
         async function load_wasm() {
@@ -166,31 +226,31 @@
 
         window.drawingIntervalObject = null;
         window.startDrawing = function () {
-            if (getNum('param_iter_per_sec') == 0) {
+            if (param_iter_per_sec == 0) {
                 alert('Кількість ітерацій за секунду не має бути 0!!!');
                 return;
             }
 
-            if (getNum('param_freq') == 0) {
+            if (param_freq == 0) {
                 alert('Частота не має бути 0!!!');
                 return;
             }
 
-            drawer.set_iter_per_sec(getNum('param_iter_per_sec'));
-            drawer.set_speed(getNum('speed'));
-            drawer.set_time(getNum('time') * 60); // Minutes -> seconds
-            drawer.set_bounded(isChecked('param_bounded'));
-            drawer.set_should_wait_until_end(isChecked('param_wait'));
-            drawer.set_hungry(isChecked('param_hungry'));
-            drawer.set_neighbour_limit(getNum('param_neighbour_limit'));
+            drawer.set_iter_per_sec(param_iter_per_sec);
+            drawer.set_speed(speed);
+            drawer.set_time(time * 60); // Minutes -> seconds
+            drawer.set_bounded(param_bounded);
+            drawer.set_should_wait_until_end(param_wait);
+            drawer.set_hungry(param_hungry);
+            drawer.set_neighbour_limit(param_neighbour_limit);
 
-            drawer.set_gen_S(isChecked('param_gen_St'));
-            drawer.set_gen_N(isChecked('param_gen_Nt'));
-            drawer.set_gen_T(isChecked('param_gen_Tt'));
+            drawer.set_gen_S(param_gen_St);
+            drawer.set_gen_N(param_gen_Nt);
+            drawer.set_gen_T(param_gen_Tt);
 
             if (window.drawingIntervalObject === null)
                 window.drawingIntervalObject =
-                    setInterval(step, 1000. / getNum('param_freq'));
+                    setInterval(step, 1000. / param_freq);
         };
 
         window.stopDrawing = function () {
@@ -206,9 +266,9 @@
         };
 
         window.downloadData = function () {
-            let need_S = isChecked('param_gen_St');
-            let need_N = isChecked('param_gen_Nt');
-            let need_T = isChecked('param_gen_Tt');
+            let need_S = param_gen_St;
+            let need_N = param_gen_Nt;
+            let need_T = param_gen_Tt;
             let S = drawer.get_data_S();
             let N = drawer.get_data_N();
             let T = drawer.get_data_T();

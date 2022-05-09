@@ -7,6 +7,7 @@ use crate::consts::*;
 pub struct Circle {
     pub x: f64,
     pub y: f64,
+    pub z: f64,
     pub r: f64,
     pub fill_style: JsValue,
     pub is_active: bool,
@@ -18,17 +19,18 @@ pub struct Circle {
 
 impl PartialEq for Circle {
     fn eq(&self, other: &Self) -> bool {
-        self.x == other.x && self.y == other.y && self.r == other.r
+        [self.x, self.y, self.z, self.r] == [other.x, other.y, other.z, other.r]
     }
 }
 
 impl Eq for Circle {}
 
 impl Circle {
-    pub fn from(id: i32, x: f64, y: f64, r: f64, fill_style: &str) -> Self {
+    pub fn from(id: i32, x: f64, y: f64, z: f64, r: f64, fill_style: &str) -> Self {
         Self {
             x,
             y,
+            z,
             r,
             fill_style: JsValue::from_str(fill_style),
             is_active: true,
@@ -39,7 +41,7 @@ impl Circle {
     }
 
     pub fn new(id: i32) -> Self {
-        Self::from(id, 0., 0., 0., "#000000")
+        Self::from(id, 0., 0., 0., 0., "#000000")
     }
 
     pub fn new_random_color(id: i32) -> Self {
@@ -50,7 +52,7 @@ impl Circle {
             rand::random::<u8>()
         );
 
-        Self::from(id, 0., 0., 0., color.as_str())
+        Self::from(id, 0., 0., 0., 0., color.as_str())
     }
 
     pub fn grow(&mut self, speed: f64) {
@@ -65,24 +67,53 @@ impl Circle {
         }
     }
 
+    pub fn activate(&mut self) {
+        self.is_active = true;
+    }
+
     pub fn deactivate(&mut self) {
         self.is_active = false;
     }
 
     pub fn intersects(&self, other: &Self) -> bool {
-        (self.x - other.x).powf(2.) + (self.y - other.y).powf(2.) <= (self.r + other.r).powf(2.)
+        (self.x - other.x).powf(2.) +
+        (self.y - other.y).powf(2.) +
+        (self.z - other.z).powf(2.)
+        <=
+        (self.r + other.r).powf(2.)
     }
 
     pub fn out_of_bounds(&self) -> bool {
-        (self.r >= self.x)
-            || (self.r >= self.y)
-            || (self.r >= (CANVAS_SIZE - self.x))
-            || (self.r >= (CANVAS_SIZE - self.y))
+        (self.x <= self.r)
+            || (self.y <= self.r)
+            || (self.z <= self.r)
+            || (self.x + self.r >= CANVAS_SIZE)
+            || (self.y + self.r >= CANVAS_SIZE)
+            || (self.z + self.r >= CANVAS_SIZE)
+    }
+
+    /// Returns: metres
+    pub fn length(&self) -> f64 {
+        self.r * 2.
     }
 
     /// Returns: square metres
     pub fn area(&self) -> f64 {
         f64::consts::PI * self.r.powf(2.) / 1e6 // metre^2 contains 10^6 millimetre^2
+    }
+
+    /// Returns: cubic metres
+    pub fn volume(&self) -> f64 {
+        0.75 * f64::consts::PI * self.r.powf(3.) / 1e9 // // metre^3 contains 10^9 millimetre^3
+    }
+
+    pub fn get_size(&self, dimensions: i32) -> f64 {
+        match dimensions {
+            1 => self.length(),
+            2 => self.area(),
+            3 => self.volume(),
+            _ => panic!("Invalid number of dimensions: {}", dimensions)
+        }
     }
 
     pub fn clear_neighbours(&mut self) {
@@ -96,5 +127,9 @@ impl Circle {
     // Returns true if there are too many neighbours
     pub fn is_jammed(&self, limit: i32) -> bool {
         self.n_neighbours >= limit
+    }
+
+    pub fn is_free(&self) -> bool {
+        self.n_neighbours == 0
     }
 }

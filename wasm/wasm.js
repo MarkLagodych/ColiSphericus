@@ -258,6 +258,12 @@ export class CircleDrawer {
         wasm.circledrawer_set_should_wait_until_end(this.ptr, value);
     }
     /**
+    * @param {number} value
+    */
+    set_dimensions(value) {
+        wasm.circledrawer_set_dimensions(this.ptr, value);
+    }
+    /**
     * @returns {boolean}
     */
     is_finished() {
@@ -313,6 +319,14 @@ export class CircleDrawer {
     */
     get_data_T() {
         const ret = wasm.circledrawer_get_data_T(this.ptr);
+        return takeObject(ret);
+    }
+    /**
+    * Returns a sorted array of area/volumes of the circles that are present on the field
+    * @returns {Float64Array}
+    */
+    get_data_size_distrib() {
+        const ret = wasm.circledrawer_get_data_size_distrib(this.ptr);
         return takeObject(ret);
     }
     /**
@@ -405,11 +419,11 @@ async function init(input) {
         const ret = getObject(arg0).getContext(getStringFromWasm0(arg1, arg2));
         return isLikeNone(ret) ? 0 : addHeapObject(ret);
     }, arguments) };
-    imports.wbg.__wbg_getRandomValues_fb6b088efb6bead2 = function() { return handleError(function (arg0, arg1) {
-        getObject(arg0).getRandomValues(getObject(arg1));
-    }, arguments) };
     imports.wbg.__wbg_randomFillSync_654a7797990fb8db = function() { return handleError(function (arg0, arg1, arg2) {
         getObject(arg0).randomFillSync(getArrayU8FromWasm0(arg1, arg2));
+    }, arguments) };
+    imports.wbg.__wbg_getRandomValues_fb6b088efb6bead2 = function() { return handleError(function (arg0, arg1) {
+        getObject(arg0).getRandomValues(getObject(arg1));
     }, arguments) };
     imports.wbg.__wbg_process_70251ed1291754d5 = function(arg0) {
         const ret = getObject(arg0).process;

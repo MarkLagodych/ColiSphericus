@@ -54,7 +54,7 @@
                 <div id="popover" class="param-list-wrapper">
                     <form>
                         <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="param_bounded" checked>
+                            <input type="checkbox" class="form-check-input" id="param_bounded">
                             <label class="form-check-label" for="param_bounded">Не виходити за межі</label>
                         </div>
 
@@ -95,6 +95,10 @@
                         <br />
 
                         <div>
+                            <label for="param_dim" class="form-label">Кількість вимірів:</label>
+                            <input type="number" class="form-control" id="param_dim" value="2">
+                        </div>
+                        <div class="mt-2">
                             <label for="param_iter_per_sec" class="form-label">Здійснювати ітерацій для моделювання 1
                                 секунди:</label>
                             <input type="number" class="form-control" id="param_iter_per_sec" value="2">
@@ -109,9 +113,11 @@
             </div>
 
             <button class="btn btn-outline-primary d-flex flex-row align-items-center justify-content-between m-2"
+                title="Завантажити дані"
                 onclick="downloadData()"><i class="bi-download"
-                    style="font-size: 1.2em; line-height: 1em; margin-right: 5px;"></i><span
-                    style="white-space: nowrap;">Завантажити дані</span></button>
+                    style="font-size: 1.2em; line-height: 1em; margin-right: 5px;"></i>
+                    <!-- <span style="white-space: nowrap;">Завантажити дані</span> -->
+                </button>
         </div>
     </div>
 
@@ -140,66 +146,53 @@
         let param_hungry
         let param_neighbour_limit
         let param_freq
+        let param_dim
+
+        function isChecked(checkboxId) {
+            return document.getElementById(checkboxId).checked;
+        }
+
+        function getNum(inputId) {
+            return Number.parseFloat(document.getElementById(inputId).value);
+        }
+
+        function readParams() {
+            param_gen_St = isChecked('param_gen_St')
+            param_gen_Nt = isChecked('param_gen_Nt')
+            param_gen_Tt = isChecked('param_gen_Tt')
+            param_iter_per_sec = getNum('param_iter_per_sec')
+            speed = getNum('speed')
+            time = getNum('time')
+            param_bounded = isChecked('param_bounded')
+            param_wait = isChecked('param_wait')
+            param_hungry = isChecked('param_hungry')
+            param_neighbour_limit = getNum('param_neighbour_limit')
+            param_freq = getNum('param_freq')
+            param_dim = getNum('param_dim')
+
+            console.log('Mode: ' + param_dim + 'D')
+        }
 
         window.onload = () => {
-            let options = {
-                html: true,
-                content: document.getElementById('popover')
-            }
+            readParams();
 
-            let exampleEl = document.getElementById('popbtn')
-            let popover = new bootstrap.Popover(exampleEl, options)
-            exampleEl.addEventListener('inserted.bs.popover', () => {
-                param_gen_St = isChecked('param_gen_St')
-                param_gen_Nt = isChecked('param_gen_Nt')
-                param_gen_Tt = isChecked('param_gen_Tt')
-                param_iter_per_sec = getNum('param_iter_per_sec')
-                speed = getNum('speed')
-                time = getNum('time')
-                param_bounded = isChecked('param_bounded')
-                param_wait = isChecked('param_wait')
-                param_hungry = isChecked('param_hungry')
-                param_neighbour_limit = getNum('param_neighbour_limit')
-                param_freq = getNum('param_freq')
+            let popbtn = document.getElementById('popbtn')
 
-                console.log(param_gen_St)
-                console.log(param_gen_Nt)
-                console.log(param_gen_Tt)
-                console.log(param_iter_per_sec)
-                console.log(speed)
-                console.log(time)
-                console.log(param_bounded)
-                console.log(param_wait)
-                console.log(param_hungry)
-                console.log(param_neighbour_limit)
-                console.log(param_freq)
-            })
+            new bootstrap.Popover(
+                popbtn,
+                {
+                    html: true,
+                    content: document.getElementById('popover')
+                }
+            );
 
-            exampleEl.addEventListener('hide.bs.popover', () => {
-                param_gen_St = isChecked('param_gen_St')
-                param_gen_Nt = isChecked('param_gen_Nt')
-                param_gen_Tt = isChecked('param_gen_Tt')
-                param_iter_per_sec = getNum('param_iter_per_sec')
-                speed = getNum('speed')
-                time = getNum('time')
-                param_bounded = isChecked('param_bounded')
-                param_wait = isChecked('param_wait')
-                param_hungry = isChecked('param_hungry')
-                param_neighbour_limit = getNum('param_neighbour_limit')
-                param_freq = getNum('param_freq')
+            popbtn.addEventListener('inserted.bs.popover', () => {
+                readParams();
+            });
 
-                console.log(param_gen_St)
-                console.log(param_gen_Nt)
-                console.log(param_gen_Tt)
-                console.log(param_iter_per_sec)
-                console.log(speed)
-                console.log(time)
-                console.log(param_bounded)
-                console.log(param_wait)
-                console.log(param_hungry)
-                console.log(param_neighbour_limit)
-                console.log(param_freq)
-            })
+            popbtn.addEventListener('hide.bs.popover', () => {
+                readParams();
+            });
         }
 
         var drawer;
@@ -214,14 +207,6 @@
             drawer.draw();
             if (drawer.is_finished())
                 window.stopDrawing();
-        }
-
-        function isChecked(checkboxId) {
-            return document.getElementById(checkboxId).checked;
-        }
-
-        function getNum(inputId) {
-            return Number.parseFloat(document.getElementById(inputId).value);
         }
 
         window.drawingIntervalObject = null;
@@ -247,6 +232,8 @@
             drawer.set_gen_S(param_gen_St);
             drawer.set_gen_N(param_gen_Nt);
             drawer.set_gen_T(param_gen_Tt);
+
+            drawer.set_dimensions(param_dim);
 
             if (window.drawingIntervalObject === null)
                 window.drawingIntervalObject =

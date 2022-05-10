@@ -157,6 +157,10 @@ impl CircleDrawer {
         self.is_time_passed() && !self.is_still_growing
     }
 
+    fn emergency_stop(&mut self) {
+        self.clock = self.time;
+    }
+
     /// Indicates if the current time (self.clock) is approximately equal to xxx.0
     /// This is important because the time may not change by exactly 1 second
     fn is_second_finished(&self) -> bool {
@@ -242,7 +246,13 @@ impl CircleDrawer {
                 let mut circle = Circle::new_random_color(self.next_circle_id);
 
                 let mut rng = rand::thread_rng();
+                let mut attempts_left = 10_000i32;
                 loop {
+                    attempts_left -= 1;
+                    if attempts_left <= 0 {
+                        self.emergency_stop();
+                    }
+
                     circle.x = rng.gen_range(0. .. CANVAS_SIZE);
 
                     circle.y =
@@ -262,7 +272,16 @@ impl CircleDrawer {
                     }
                 }
 
-                self.circles.push(circle);
+                if !self.has_z() {
+                    self.circles.push(circle);
+                } else {
+                    // Insert sorted by Z
+                    let mut index = 0usize;
+                    while index < self.circles.len() && self.circles[index].z >= circle.z {
+                        index += 1;
+                    }
+                    self.circles.insert(index, circle);
+                }
                 
                 if self.should_gen_T {
                     self.data_T.push(0.);

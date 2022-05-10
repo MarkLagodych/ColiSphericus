@@ -27,10 +27,10 @@
                 Старт<i class="bi-play-fill" style="font-size: 1.5em; line-height: 1em; margin-left: 5px;"></i>
             </button>
 
-            <button class="btn btn-danger d-flex align-items-center m-2" onclick="stopDrawing()">Стоп<i
+            <button class="btn btn-primary d-flex align-items-center m-2" onclick="stopDrawing()">Стоп<i
                     class="bi-stop-fill" style="font-size: 1.5em; line-height: 1em; margin-left: 5px;"></i></button>
 
-            <button class="btn btn-primary d-flex align-items-center m-2" onclick="clearDrawing()">Очистити<i
+            <button class="btn btn-danger d-flex align-items-center m-2" onclick="clearDrawing()">Очистити<i
                     class="bi-arrow-counterclockwise"
                     style="font-size: 1.5em; line-height: 1em; margin-left: 5px;"></i></button>
 
@@ -66,6 +66,11 @@
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="param_hungry">
                             <label class="form-check-label" for="param_hungry">Голодні колонії</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="param_zalpha">
+                            <label class="form-check-label" for="param_zalpha">Прозорі сфери</label>
                         </div>
 
                         <br>
@@ -115,9 +120,9 @@
             <button class="btn btn-outline-primary d-flex flex-row align-items-center justify-content-between m-2"
                 title="Завантажити дані"
                 onclick="downloadData()"><i class="bi-download"
-                    style="font-size: 1.2em; line-height: 1em; margin-right: 5px;"></i>
+                    style="font-size: 1.2em; line-height: 1em;"></i> <!-- margin-right: 5px; -->
                     <!-- <span style="white-space: nowrap;">Завантажити дані</span> -->
-                </button>
+            </button>
         </div>
     </div>
 
@@ -147,6 +152,7 @@
         let param_neighbour_limit
         let param_freq
         let param_dim
+        let param_zalpha
 
         function isChecked(checkboxId) {
             return document.getElementById(checkboxId).checked;
@@ -169,6 +175,7 @@
             param_neighbour_limit = getNum('param_neighbour_limit')
             param_freq = getNum('param_freq')
             param_dim = getNum('param_dim')
+            param_zalpha = isChecked('param_zalpha')
 
             console.log('Mode: ' + param_dim + 'D')
         }
@@ -234,6 +241,7 @@
             drawer.set_gen_T(param_gen_Tt);
 
             drawer.set_dimensions(param_dim);
+            drawer.set_use_z_alpha(param_zalpha);
 
             if (window.drawingIntervalObject === null)
                 window.drawingIntervalObject =

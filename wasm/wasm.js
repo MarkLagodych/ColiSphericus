@@ -219,11 +219,6 @@ export class CircleDrawer {
     }
     /**
     */
-    clear_canvas() {
-        wasm.circledrawer_clear_canvas(this.ptr);
-    }
-    /**
-    */
     clear() {
         wasm.circledrawer_clear(this.ptr);
     }
@@ -262,6 +257,12 @@ export class CircleDrawer {
     */
     set_dimensions(value) {
         wasm.circledrawer_set_dimensions(this.ptr, value);
+    }
+    /**
+    * @param {boolean} value
+    */
+    set_use_z_alpha(value) {
+        wasm.circledrawer_set_use_z_alpha(this.ptr, value);
     }
     /**
     * @returns {boolean}
@@ -392,9 +393,15 @@ async function init(input) {
         const ret = getObject(arg0).getElementById(getStringFromWasm0(arg1, arg2));
         return isLikeNone(ret) ? 0 : addHeapObject(ret);
     };
+    imports.wbg.__wbg_addColorStop_d8e4383b19c1dc6f = function() { return handleError(function (arg0, arg1, arg2, arg3) {
+        getObject(arg0).addColorStop(arg1, getStringFromWasm0(arg2, arg3));
+    }, arguments) };
     imports.wbg.__wbg_instanceof_CanvasRenderingContext2d_405495bb0ea92c4f = function(arg0) {
         const ret = getObject(arg0) instanceof CanvasRenderingContext2D;
         return ret;
+    };
+    imports.wbg.__wbg_setglobalAlpha_d6d2f5636a624c43 = function(arg0, arg1) {
+        getObject(arg0).globalAlpha = arg1;
     };
     imports.wbg.__wbg_setfillStyle_1d391c4891a6ec4d = function(arg0, arg1) {
         getObject(arg0).fillStyle = getObject(arg1);
@@ -405,6 +412,10 @@ async function init(input) {
     imports.wbg.__wbg_fill_b6e37fbbefb55ae0 = function(arg0) {
         getObject(arg0).fill();
     };
+    imports.wbg.__wbg_createRadialGradient_c70ef75c8c93c6be = function() { return handleError(function (arg0, arg1, arg2, arg3, arg4, arg5, arg6) {
+        const ret = getObject(arg0).createRadialGradient(arg1, arg2, arg3, arg4, arg5, arg6);
+        return addHeapObject(ret);
+    }, arguments) };
     imports.wbg.__wbg_ellipse_c8e6fd53b444f6c3 = function() { return handleError(function (arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) {
         getObject(arg0).ellipse(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
     }, arguments) };

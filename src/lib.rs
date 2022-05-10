@@ -33,6 +33,7 @@ pub struct CircleDrawer {
     should_gen_N: bool,
     should_gen_T: bool,
     dimensions: i32, /// 1/2/3 for 1D/2D/3D
+    use_z_alpha: bool,
 
     // Generated data
     data_S: Vec<f64>,
@@ -77,6 +78,7 @@ impl CircleDrawer {
             should_gen_T: false,
 
             dimensions: 2,
+            use_z_alpha: false,
 
             data_S: vec![],
             data_N: vec![],
@@ -84,23 +86,47 @@ impl CircleDrawer {
         }
     }
 
-    fn draw_circle(&self, circle: &Circle) {
+    fn draw_circle(&self, c: &Circle) {
         self.ctx.begin_path();
         self.ctx.ellipse(
-            circle.x,
-            circle.y,
-            circle.r,
-            circle.r,
+            c.x, c.y,
+            c.r, c.r,
             0., // rotation
             0.,
             f64::consts::PI * 2.,
         );
-        self.ctx.set_fill_style(&circle.fill_style);
+
+        if self.has_z() && self.use_z_alpha {
+            // Alpha will be in range [MIN_ALPHA; 1]; the closer, the more transparent
+            let k = 1.0f64 - MIN_ALPHA;
+            self.ctx.set_global_alpha(MIN_ALPHA + k * c.z / CANVAS_SIZE);
+        }
+
+        if self.has_z() {
+            let gradient = self.ctx.create_radial_gradient(
+                c.x-c.r/2., c.y-c.r/2., c.r/5.,
+                c.x-c.r/2., c.y-c.r/2., c.r * 2.
+            ).unwrap();
+            gradient.add_color_stop(0., c.fill_style_str.as_str());
+            gradient.add_color_stop(1., "#000000");
+            self.ctx.set_fill_style(&gradient);
+        } else {
+            self.ctx.set_fill_style(&c.fill_style);
+        }
+
         self.ctx.fill();
     }
 
-    pub fn clear_canvas(&self) {
+    fn begin_drawing(&self) {
+        self.clear_canvas();
+    }
+
+    fn clear_canvas(&self) {
         self.ctx.clear_rect(0., 0., CANVAS_SIZE, CANVAS_SIZE);
+    }
+
+    fn end_drawing(&self) {
+        self.ctx.set_global_alpha(1.);
     }
 
     pub fn clear(&mut self) {
@@ -139,6 +165,9 @@ impl CircleDrawer {
         self.dimensions = value;
     }
 
+    pub fn set_use_z_alpha(&mut self, value: bool) {
+        self.use_z_alpha = value;
+    }
 
     fn is_time_passed(&self) -> bool {
         self.clock >= self.time
@@ -296,7 +325,7 @@ impl CircleDrawer {
             circle.grow_older(tick_time);
         }
 
-        self.clear_canvas();
+        self.begin_drawing();
 
         // 1. Draw circles;  2. Find out if there are still growing circles
         self.is_still_growing = false;
@@ -309,6 +338,8 @@ impl CircleDrawer {
                 self.is_still_growing = true;
             }
         }
+
+        self.end_drawing();
 
         // Generate data
         if self.is_second_finished() {

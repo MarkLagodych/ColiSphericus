@@ -10,6 +10,7 @@ pub struct Circle {
     pub z: f64,
     pub r: f64,
     pub fill_style: JsValue,
+    pub fill_style_str: String,
     pub is_active: bool,
     
     pub id: i32, /// Unique circle identifier
@@ -26,13 +27,14 @@ impl PartialEq for Circle {
 impl Eq for Circle {}
 
 impl Circle {
-    pub fn from(id: i32, x: f64, y: f64, z: f64, r: f64, fill_style: &str) -> Self {
+    pub fn from(id: i32, x: f64, y: f64, z: f64, r: f64, fill_style: String) -> Self {
         Self {
             x,
             y,
             z,
             r,
-            fill_style: JsValue::from_str(fill_style),
+            fill_style: JsValue::from_str(fill_style.as_str()),
+            fill_style_str: fill_style,
             is_active: true,
             life_length: 0.,
             id,
@@ -41,7 +43,7 @@ impl Circle {
     }
 
     pub fn new(id: i32) -> Self {
-        Self::from(id, 0., 0., 0., 0., "#000000")
+        Self::from(id, 0., 0., 0., 0., "#000000".to_string())
     }
 
     pub fn new_random_color(id: i32) -> Self {
@@ -52,7 +54,7 @@ impl Circle {
             rand::random::<u8>()
         );
 
-        Self::from(id, 0., 0., 0., 0., color.as_str())
+        Self::from(id, 0., 0., 0., 0., color)
     }
 
     pub fn grow(&mut self, speed: f64) {

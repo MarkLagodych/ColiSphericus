@@ -2,9 +2,14 @@
 name = "coli_sphericus"
 version = "0.1.0"
 edition = "2021"
+authors=[
+  "Іван Деревянкін",
+  "Марк Лагодич"
+]
 description = """
 Задача №4 "Бактерія звичайна кругова"
 """
+repository="https://github.com/MarkLagodych/ColiSphericus"
 
 [lib]
 crate-type = ["cdylib"]

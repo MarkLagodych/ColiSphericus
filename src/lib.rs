@@ -186,7 +186,7 @@ impl CircleDrawer {
     }
 
     pub fn is_finished(&self) -> bool {
-        self.is_time_passed() && !self.is_still_growing
+        self.is_time_passed() && !(self.should_wait_until_end && self.is_still_growing)
     }
 
     fn emergency_stop(&mut self) {
@@ -267,7 +267,7 @@ impl CircleDrawer {
         self.tick();
         let tick_time = self.tick_time();
 
-        if self.is_time_passed() && !(self.should_wait_until_end && self.is_still_growing) {
+        if self.is_finished() {
             return;
         }
 

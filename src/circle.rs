@@ -96,17 +96,17 @@ impl Circle {
 
     /// Returns: metres
     pub fn length(&self) -> f64 {
-        self.r * 2.
+        self.r * 2. / 1e3 // metre contains 10^3 millimetres
     }
 
     /// Returns: square metres
     pub fn area(&self) -> f64 {
-        f64::consts::PI * self.r.powf(2.) / 1e6 // metre^2 contains 10^6 millimetre^2
+        f64::consts::PI * self.r.powf(2.) / 1e6 // metre^2 contains 10^6 millimetres^2
     }
 
     /// Returns: cubic metres
     pub fn volume(&self) -> f64 {
-        0.75 * f64::consts::PI * self.r.powf(3.) / 1e9 // // metre^3 contains 10^9 millimetre^3
+        0.75 * f64::consts::PI * self.r.powf(3.) / 1e9 // // metre^3 contains 10^9 millimetres^3
     }
 
     pub fn get_size(&self, dimensions: i32) -> f64 {

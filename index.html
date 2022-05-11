@@ -20,15 +20,18 @@
 <body>
     <a id="downloader" target="_blank" download="data.csv" hidden></a>
 
+    <div id="widget_cache" style="display: none;">
+        <button id="stopbtn" class="btn btn-success d-flex align-items-center m-2" onclick="stopDrawing()">Стоп<i
+            class="bi-stop-fill" style="font-size: 1.5em; line-height: 1em; margin-left: 5px;"></i></button>
+    </div>
+
     <div class="navbar navbar-expand-sm navbar-light bg-light position-absolute top-0"
-        style="width: 100vw; height: 7vh; box-shadow: 0px 0.5px 5px 0px grey;">
-        <div class="container-fluid align-items-center">
-            <button class="btn btn-success d-flex flex-row align-items-center m-2" onclick="startDrawing()">
+        style="width: 100vw; height: fit-content; box-shadow: 0px 0.5px 5px 0px grey;">
+        <div class="container-fluid align-items-center" id="control_panel">
+
+            <button id="startbtn" class="btn btn-primary d-flex flex-row align-items-center m-2" onclick="startDrawing()">
                 Старт<i class="bi-play-fill" style="font-size: 1.5em; line-height: 1em; margin-left: 5px;"></i>
             </button>
-
-            <button class="btn btn-primary d-flex align-items-center m-2" onclick="stopDrawing()">Стоп<i
-                    class="bi-stop-fill" style="font-size: 1.5em; line-height: 1em; margin-left: 5px;"></i></button>
 
             <button class="btn btn-danger d-flex align-items-center m-2" onclick="clearDrawing()">Очистити<i
                     class="bi-arrow-counterclockwise"
@@ -216,6 +219,24 @@
                 window.stopDrawing();
         }
 
+        function changeStartStopButton(has_started) {
+            let startbtn = document.getElementById('startbtn');
+            let stopbtn = document.getElementById('stopbtn');
+            startbtn.remove();
+            stopbtn.remove();
+            
+            let widget_cache = document.getElementById('widget_cache');
+            let control_panel = document.getElementById('control_panel');
+
+            if (has_started) {
+                widget_cache.prepend(startbtn);
+                control_panel.prepend(stopbtn);
+            } else {
+                widget_cache.prepend(stopbtn);
+                control_panel.prepend(startbtn);
+            }
+        }
+
         window.drawingIntervalObject = null;
         window.startDrawing = function () {
             if (param_iter_per_sec == 0) {
@@ -243,20 +264,22 @@
             drawer.set_dimensions(param_dim);
             drawer.set_use_z_alpha(param_zalpha);
 
-            if (window.drawingIntervalObject === null)
-                window.drawingIntervalObject =
-                    setInterval(step, 1000. / param_freq);
+            if (window.drawingIntervalObject === null) {
+                window.drawingIntervalObject = setInterval(step, 1000. / param_freq);
+                changeStartStopButton(true);
+            }
         };
 
         window.stopDrawing = function () {
             if (window.drawingIntervalObject !== null) {
                 clearInterval(window.drawingIntervalObject);
                 window.drawingIntervalObject = null;
+                changeStartStopButton(false);
             }
         };
 
         window.clearDrawing = function () {
-            if (confirm("Точно очистити?"))
+            if (confirm("Точно очистити? Все видалиться!"))
                 drawer.clear();
         };
 

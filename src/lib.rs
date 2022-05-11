@@ -103,9 +103,12 @@ impl CircleDrawer {
         }
 
         if self.has_z() {
+            // CAUTION: magic numbers
+            let x = c.x - c.r * 0.5;
+            let y = c.y - c.r * 0.5;
             let gradient = self.ctx.create_radial_gradient(
-                c.x-c.r/2., c.y-c.r/2., c.r/5.,
-                c.x-c.r/2., c.y-c.r/2., c.r * 2.
+                x, y, c.r * 0.2, 
+                x, y, c.r * 1.9
             ).unwrap();
             gradient.add_color_stop(0., c.fill_style_str.as_str());
             gradient.add_color_stop(1., "#000000");

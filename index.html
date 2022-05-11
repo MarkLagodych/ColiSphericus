@@ -22,14 +22,15 @@
 
     <div id="widget_cache" style="display: none;">
         <button id="stopbtn" class="btn btn-success d-flex align-items-center m-2" onclick="stopDrawing()">Стоп<i
-            class="bi-stop-fill" style="font-size: 1.5em; line-height: 1em; margin-left: 5px;"></i></button>
+                class="bi-stop-fill" style="font-size: 1.5em; line-height: 1em; margin-left: 5px;"></i></button>
     </div>
 
     <div class="navbar navbar-expand-sm navbar-light bg-light position-absolute top-0"
         style="width: 100vw; height: fit-content; box-shadow: 0px 0.5px 5px 0px grey;">
         <div class="container-fluid align-items-center" id="control_panel">
 
-            <button id="startbtn" class="btn btn-primary d-flex flex-row align-items-center m-2" onclick="startDrawing()">
+            <button id="startbtn" class="btn btn-primary d-flex flex-row align-items-center m-2"
+                onclick="startDrawing()">
                 Старт<i class="bi-play-fill" style="font-size: 1.5em; line-height: 1em; margin-left: 5px;"></i>
             </button>
 
@@ -42,10 +43,9 @@
                     style="font-size: 1.1em; line-height: 1em; margin-left: 5px;"></i></button>
 
             <button class="btn btn-outline-primary d-flex flex-row align-items-center justify-content-between m-2"
-                title="Завантажити дані"
-                onclick="downloadData()"><i class="bi-download"
+                title="Завантажити дані" onclick="downloadData()"><i class="bi-download"
                     style="font-size: 1.2em; line-height: 1em;"></i> <!-- margin-right: 5px; -->
-                    <!-- <span style="white-space: nowrap;">Завантажити дані</span> -->
+                <!-- <span style="white-space: nowrap;">Завантажити дані</span> -->
             </button>
 
             <div class="input-group m-2">
@@ -209,6 +209,16 @@
             popbtn.addEventListener('hide.bs.popover', () => {
                 readParams();
             });
+
+            let form = document.querySelectorAll("form input").forEach((x) => {
+                x.oninput = readParams
+            })
+
+            let speed_input = document.querySelectorAll("#speed")[0]
+            speed_input.oninput = () => { speed = Number(speed_input.value) }
+
+            let time_input = document.querySelectorAll("#time")[0]
+            time_input.oninput = () => { time = Number(time_input.value) }
         }
 
         var drawer;
@@ -230,7 +240,7 @@
             let stopbtn = document.getElementById('stopbtn');
             startbtn.remove();
             stopbtn.remove();
-            
+
             let widget_cache = document.getElementById('widget_cache');
             let control_panel = document.getElementById('control_panel');
 
@@ -311,7 +321,7 @@
             let size_unit = 'м';
             if (param_dim == 2) size_unit += '²';
             if (param_dim >= 3) size_unit += '³';
-            size_unit = ' [' + size_unit + ']'; 
+            size_unit = ' [' + size_unit + ']';
 
             let size_letter = 'l';
             if (param_dim == 2) size_letter = 'S';

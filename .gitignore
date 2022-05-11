@@ -2,6 +2,8 @@ target
 .junk
 .vscode
 *.ts
-wasm/.gitignore
-wasm/README.md
-wasm/package.json
+web/wasm/.gitignore
+web/wasm/README.md
+web/wasm/package.json
+!web/wasm/wasm.js
+!web/wasm/wasm_bg.wasm

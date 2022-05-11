@@ -7,3 +7,11 @@ html, body {
     margin: 0;
     padding: 0;
 }
+
+#canvas {
+    width: min(70vw, 70vh);
+    background-color: whitesmoke;
+    border-radius: 5px;
+    border: 0.5px lightgrey solid;
+    box-shadow: inset 0px 0px 2px 2px lightgrey;
+}

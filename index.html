@@ -214,10 +214,10 @@
                 x.oninput = readParams
             })
 
-            let speed_input = document.querySelectorAll("#speed")[0]
+            let speed_input = document.getElementById("speed")
             speed_input.oninput = () => { speed = Number(speed_input.value) }
 
-            let time_input = document.querySelectorAll("#time")[0]
+            let time_input = document.getElementById("time")
             time_input.oninput = () => { time = Number(time_input.value) }
         }
 

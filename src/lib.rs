@@ -283,6 +283,7 @@ impl CircleDrawer {
                     attempts_left -= 1;
                     if attempts_left <= 0 {
                         self.emergency_stop();
+                        return;
                     }
 
                     circle.x = rng.gen_range(0. .. CANVAS_SIZE);
@@ -400,7 +401,9 @@ impl CircleDrawer {
                     self.circles.remove(i);
                     continue;
                 } else if self.circles[i].is_free() {
-                    self.circles[i].activate();
+                    if !(self.is_bounded && self.circles[i].out_of_bounds()) {
+                        self.circles[i].activate();
+                    }
                 }
                 i += 1;
             }

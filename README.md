@@ -1,11 +1,5 @@
 # #4. Coli Sphericus
 
-## TODO
-
-- [ ] Добавить график размеров в `plot.gnuplot`
-- [ ] Как-то улучшить 1Д????
-- [ ] Презентация
-
 ## Build
 ```sh
 cargo install wasm-pack
@@ -17,5 +11,5 @@ Use a local server.
 
 ## Plot graphs
 ```sh
-gnuplot -e "file='data/data-###.csv'" plot.gnuplot 
+gnuplot -e "file='data/data-v1-t15-3d.csv'; distrib=1" plot.gnuplot
 ```

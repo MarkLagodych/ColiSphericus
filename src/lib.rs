@@ -107,14 +107,15 @@ impl CircleDrawer {
             let x = c.x - c.r * 0.5;
             let y = c.y - c.r * 0.5;
             let gradient = self.ctx.create_radial_gradient(
-                x, y, c.r * 0.2, 
-                x, y, c.r * 1.9
+                x, y, 1., 
+                x, y, c.r * 1.5
             ).unwrap();
-            gradient.add_color_stop(0., c.fill_style_str.as_str());
-            gradient.add_color_stop(1., "#000000");
+            gradient.add_color_stop(0., c.reflection_color.as_str());
+            gradient.add_color_stop(0.3, c.color.as_str());
+            gradient.add_color_stop(1., c.shadow_color.as_str());
             self.ctx.set_fill_style(&gradient);
         } else {
-            self.ctx.set_fill_style(&c.fill_style);
+            self.ctx.set_fill_style(&c.color.as_str().into());
         }
 
         self.ctx.fill();
@@ -275,7 +276,7 @@ impl CircleDrawer {
             // (nearly) every second
             if self.is_second_finished() {
                 // Create new circle
-                let mut circle = Circle::new_random_color(self.next_circle_id);
+                let mut circle = Circle::default(self.next_circle_id);
 
                 let mut rng = rand::thread_rng();
                 let mut attempts_left = 10_000i32;

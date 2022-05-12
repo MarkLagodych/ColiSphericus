@@ -9,8 +9,9 @@ pub struct Circle {
     pub y: f64,
     pub z: f64,
     pub r: f64,
-    pub fill_style: JsValue,
-    pub fill_style_str: String,
+    pub color: String,
+    pub reflection_color: String,
+    pub shadow_color: String,
     pub is_active: bool,
     
     pub id: i32, /// Unique circle identifier
@@ -27,14 +28,27 @@ impl PartialEq for Circle {
 impl Eq for Circle {}
 
 impl Circle {
-    pub fn from(id: i32, x: f64, y: f64, z: f64, r: f64, fill_style: String) -> Self {
+    pub fn new(id: i32, x: f64, y: f64, z: f64, r: f64) -> Self {
+        let R = rand::random::<u8>();
+        let G = rand::random::<u8>();
+        let B = rand::random::<u8>();
+
+        let color = format!("#{:02x}{:02x}{:02x}", R, G, B);
+        let reflection_color = format!("#{:02x}{:02x}{:02x}", 
+            ((R as i32 * 3 + 0xff) / 4) as u8, 
+            ((G as i32 * 3 + 0xff) / 4) as u8, 
+            ((B as i32 * 3 + 0xff) / 4) as u8
+        );
+        let shadow_color = format!("#{:02x}{:02x}{:02x}", 
+            (R as i32 / 4) as u8, 
+            (G as i32 / 4) as u8, 
+            (B as i32 / 4) as u8
+        );
+
         Self {
-            x,
-            y,
-            z,
+            x, y, z,
             r,
-            fill_style: JsValue::from_str(fill_style.as_str()),
-            fill_style_str: fill_style,
+            color, reflection_color, shadow_color,
             is_active: true,
             life_length: 0.,
             id,
@@ -42,19 +56,8 @@ impl Circle {
         }
     }
 
-    pub fn new(id: i32) -> Self {
-        Self::from(id, 0., 0., 0., 0., "#000000".to_string())
-    }
-
-    pub fn new_random_color(id: i32) -> Self {
-        let color = format!(
-            "#{:02x}{:02x}{:02x}",
-            rand::random::<u8>(),
-            rand::random::<u8>(),
-            rand::random::<u8>()
-        );
-
-        Self::from(id, 0., 0., 0., 0., color)
+    pub fn default(id: i32) -> Self {
+        Self::new(id, 0., 0., 0., 0.)
     }
 
     pub fn grow(&mut self, speed: f64) {

@@ -10,6 +10,14 @@ cargo install wasm-pack
 Use a local server.
 
 ## Plot graphs
+Install GNUPlot.
+
+Use:
 ```sh
-gnuplot -e "file='data/data-v1-t15-3d.csv'; distrib=1" plot.gnuplot
+./plot A B C
 ```
+to plot file `data/data-A.csv`.
+
+`B` is either `0` or `1` and indicates if final size distribution is to be plotted.
+
+`C` is either `0` or `1` and indicates if the script should generate an image of the graph only.

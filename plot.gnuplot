@@ -12,6 +12,8 @@ if (IMGONLY == 1) {
 
 set key right center
 set grid
+# set boxwidth 0
+set style fill solid
 
 set multiplot layout 2,2 rowsfirst
 

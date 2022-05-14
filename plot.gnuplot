@@ -27,7 +27,7 @@ if (DISTRIB == 0) {
 plot FILE using 1:4 with boxes
 
 if (DISTRIB == 1) {
-    plot FILE using 1:5 with lines
+    plot FILE using 1:5 with boxes
 }
 
 unset multiplot

@@ -1,5 +1,11 @@
 # #4. Coli Sphericus
 
+This is our solution to the problem #4 of the Ukrainian olympiad of computer experiment.
+
+## Demo
+
+The demonstration is [here](https://marklagodych.github.io/ColiSphericus).
+
 ## Build
 ```sh
 cargo install wasm-pack
